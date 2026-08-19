@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placar Robô Sumô - Telão</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body class="tela-tv">
+    <header>
+        <h1 id="titulo-modo">Aguardando Início...</h1>
+    </header>
+
+    <main>
+        <!-- MODO TORNEIO -->
+        <section id="modo-torneio" class="oculto">
+            <div class="placar-container">
+                <div class="competidor azul">
+                    <h2 id="nome-robo1">Robô 1</h2>
+                    <div class="bexigas" id="bexigas-robo1">0</div>
+                </div>
+
+                <div class="centro-placar">
+                    <h3>Tempo</h3>
+                    <div class="cronometro" id="cronometro-torneio">03:00</div>
+                    <div id="status-round">Round 1</div>
+                </div>
+
+                <div class="competidor vermelho">
+                    <h2 id="nome-robo2">Robô 2</h2>
+                    <div class="bexigas" id="bexigas-robo2">0</div>
+                </div>
+            </div>
+            <h2 id="vencedor-torneio" class="mensagem-vencedor"></h2>
+        </section>
+
+        <!-- MODO FREESTYLE -->
+        <section id="modo-freestyle" class="oculto">
+
+            <!-- Mostra o embate atual: Robo A vs Robo B -->
+            <div id="confronto-atual-tv" style="font-size: 2.5rem; margin-bottom: 1rem; font-weight: bold;"></div>
+            <div class="cronometro-container">
+                <h3>Cronômetro</h3>
+                <div class="cronometro" id="cronometro-freestyle">00:00</div>
+            </div>
+
+            <div class="historico">
+                <h3>Ranking Freestyle (Menor Tempo)</h3>
+                <ul id="lista-freestyle">
+                    <!-- Registros inseridos via JS -->
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script src="tela.js"></script>
+</body>
+
+</html>

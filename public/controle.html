@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle - Robô Sumô</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body class="tela-controle">
+
+
+    <!-- TELA DE BLOQUEIO (Visível por padrão) -->
+    <div id="tela-bloqueio" style="text-align: center; margin-top: 20vh;">
+        <h2>Aguardando Autenticação...</h2>
+    </div>
+
+    <div id="conteudo-controle" class="oculto">
+        <h2>Painel de Controle</h2>
+
+        <div class="card-controle">
+            <label>Modo de Jogo:</label>
+            <div class="botoes-modo">
+                <button id="btn-modo-torneio" class="btn-primario">Torneio</button>
+                <button id="btn-modo-freestyle" class="btn-primario">Freestyle</button>
+            </div>
+        </div>
+
+        <!-- CONTROLES TORNEIO -->
+        <div id="controles-torneio" class="card-controle oculto">
+            <h3>Modo Torneio</h3>
+            <input type="text" id="input-robo1" placeholder="Nome do Robô Azul">
+            <input type="text" id="input-robo2" placeholder="Nome do Robô Vermelho">
+
+            <div class="acoes">
+                <button id="btn-iniciar-torneio" class="btn-sucesso">Iniciar Partida</button>
+            </div>
+
+            <div class="acoes-pontuacao">
+                <button id="btn-ponto-robo1" class="btn-azul">Estourar Bexiga Azul</button>
+                <button id="btn-ponto-robo2" class="btn-vermelho">Estourar Bexiga Vermelho</button>
+            </div>
+        </div>
+
+        <!-- CONTROLES FREESTYLE -->
+    <div id="controles-freestyle" class="card-controle oculto">
+        <h3>Modo Freestyle (Morte Súbita)</h3>
+        <input type="text" id="input-free-robo1" placeholder="Nome do Robô Azul">
+        <input type="text" id="input-free-robo2" placeholder="Nome do Robô Vermelho">
+        
+        <div class="acoes">
+            <button id="btn-iniciar-freestyle" class="btn-sucesso">Iniciar Relógio</button>
+        </div>
+
+        <!-- Botões de vitória aparecem apenas quando a partida inicia -->
+        <div id="acoes-vencedor-freestyle" class="acoes-pontuacao oculto">
+            <button id="btn-venceu-robo1" class="btn-azul">Vitória Azul</button>
+            <button id="btn-venceu-robo2" class="btn-vermelho">Vitória Vermelho</button>
+            <button id="btn-cancelar-freestyle" class="btn-primario" style="margin-top: 10px; width: 100%;">Cancelar Partida</button>
+        </div>
+    </div>
+
+
+    </div>
+    <script src="controle.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+:root {
+    --bg-escuro: #121212;
+    --texto-claro: #f0f0f0;
+    --azul: #005f73;
+    --vermelho: #ae2012;
+    --verde: #2a9d8f;
+    --alerta: #e9c46a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.tela-tv {
+    background-color: var(--bg-escuro);
+    color: var(--texto-claro);
+    text-align: center;
+    padding: 2rem;
+}
+
+body.tela-controle {
+    background-color: #f4f4f9;
+    color: #333;
+    padding: 1rem;
+}
+
+.oculto {
+    display: none !important;
+}
+
+/* TV: Estrutura do Placar */
+.placar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+}
+
+.competidor {
+    flex: 1;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+.competidor.azul { background-color: var(--azul); }
+.competidor.vermelho { background-color: var(--vermelho); }
+
+.competidor h2 { font-size: 3rem; }
+.bexigas { font-size: 8rem; font-weight: bold; margin-top: 1rem; }
+
+.centro-placar { flex: 1; }
+.cronometro { font-size: 6rem; font-family: monospace; font-weight: bold; color: var(--alerta); }
+.mensagem-vencedor { margin-top: 2rem; font-size: 3rem; color: var(--verde); }
+
+/* TV: Freestyle Ranking */
+.historico { margin-top: 2rem; text-align: left; max-width: 800px; margin-inline: auto; }
+.historico ul { list-style: none; }
+.historico li { 
+    background: #222; 
+    padding: 1rem 2rem; 
+    margin-bottom: 0.5rem; 
+    border-radius: 8px; 
+    font-size: 1.5rem; 
+    display: flex; 
+    justify-content: space-between;
+}
+
+/* Controle: UI */
+.card-controle {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-primario { background: #333; color: white; }
+.btn-sucesso { background: var(--verde); color: white; }
+.btn-alerta { background: var(--alerta); color: black; }
+.btn-azul { background: var(--azul); color: white; }
+.btn-vermelho { background: var(--vermelho); color: white; }
