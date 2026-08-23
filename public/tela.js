@@ -2,7 +2,7 @@ const socket = io();
 
 
 // =========================================================
-// DADOS LOCAIS SOMENTE PARA EXIBIÇÃO
+// DADOS LOCAIS
 // =========================================================
 
 let rankingFreestyle = [];
@@ -20,6 +20,7 @@ function formatarTempo(segundos) {
 
     segundos =
         Number(segundos) || 0;
+
 
     const min =
         String(
@@ -49,14 +50,15 @@ function setTexto(
         document.getElementById(id);
 
 
+    /*
+     * Não gera warning no console.
+     *
+     * Alguns elementos pertencem somente
+     * a determinados modos da aplicação.
+     */
+
     if (!elemento) {
-
-        console.warn(
-            `Elemento '${id}' não encontrado.`
-        );
-
         return;
-
     }
 
 
@@ -83,12 +85,13 @@ socket.on(
     'carregar_dados',
     (dados) => {
 
-        if (!dados) return;
+        if (!dados) {
+            return;
+        }
 
 
         rankingFreestyle =
-            dados.rankingFreestyle ||
-            [];
+            dados.rankingFreestyle || [];
 
 
         if (dados.configuracoes) {
@@ -106,75 +109,59 @@ socket.on(
 
 
 // =========================================================
-// RANKING
+// RANKING FREESTYLE
 // =========================================================
 
 function atualizarListaFreestyle() {
 
-    const lista =
-        document.getElementById(
-            'lista-freestyle'
-        );
-
-
+    const lista = document.getElementById('lista-freestyle');
     if (!lista) return;
-
 
     lista.innerHTML = '';
 
+    if (rankingFreestyle.length === 0) {
+        const vazio = document.createElement('li');
+        vazio.className = 'historico-vazio';
+        vazio.innerText = 'Nenhum registro ainda';
+        lista.appendChild(vazio);
+        return;
+    }
 
-    rankingFreestyle.forEach(
-        (item, index) => {
+    rankingFreestyle.forEach((item, index) => {
 
-            const li =
-                document.createElement(
-                    'li'
-                );
+        const li = document.createElement('li');
 
+        const spanNome = document.createElement('span');
+        const b = document.createElement('b');
+        b.innerText = `${index + 1}º`;
+        spanNome.appendChild(b);
+        spanNome.appendChild(
+            document.createTextNode(' ' + (item.nome || 'Participante'))
+        );
 
-            const nome =
-                item.nome ||
-                'Participante';
+        const spanTempo = document.createElement('span');
+        let textoTempo = `⏱ ${formatarTempo(item.tempoSegundos)}`;
+        if (item.horario) textoTempo += ` • ${item.horario}`;
+        spanTempo.innerText = textoTempo;
 
-
-            const tempo =
-                formatarTempo(
-                    item.tempoSegundos
-                );
-
-
-            li.innerHTML = `
-                <span>
-                    <b>${index + 1}º</b>
-                    ${nome}
-                </span>
-
-                <span>
-                    ⏱ ${tempo}
-                    ${item.horario
-                    ? ` • ${item.horario}`
-                    : ''}
-                </span>
-            `;
-
-
-            lista.appendChild(li);
-
-        }
-    );
-
+        li.appendChild(spanNome);
+        li.appendChild(spanTempo);
+        lista.appendChild(li);
+    });
 }
 
 
 // =========================================================
-// ESTADO OFICIAL RECEBIDO DO SERVIDOR
+// ESTADO OFICIAL
 // =========================================================
 
 socket.on(
     'estado_competicao',
     (estado) => {
 
-        if (!estado) return;
+        if (!estado) {
+            return;
+        }
 
 
         atualizarModo(estado);
@@ -225,18 +212,27 @@ function atualizarModo(estado) {
         );
 
 
+    /*
+     * Nenhum modo selecionado.
+     */
+
     if (!estado.modo) {
 
         if (torneio) {
+
             torneio.classList.add(
                 'oculto'
             );
+
         }
 
+
         if (freestyle) {
+
             freestyle.classList.add(
                 'oculto'
             );
+
         }
 
 
@@ -251,31 +247,45 @@ function atualizarModo(estado) {
     }
 
 
+    /*
+     * TORNEIO
+     */
+
     if (
         estado.modo ===
         'torneio'
     ) {
 
         if (torneio) {
+
             torneio.classList.remove(
                 'oculto'
             );
+
         }
 
+
         if (freestyle) {
+
             freestyle.classList.add(
                 'oculto'
             );
+
         }
 
 
         setTexto(
             'titulo-modo',
-            'Modo Torneio'
+            'MODO <span class="cor-destaque cor-vermelho">TORNEIO</span>',
+            true
         );
 
     }
 
+
+    /*
+     * FREESTYLE
+     */
 
     if (
         estado.modo ===
@@ -283,21 +293,27 @@ function atualizarModo(estado) {
     ) {
 
         if (torneio) {
+
             torneio.classList.add(
                 'oculto'
             );
+
         }
 
+
         if (freestyle) {
+
             freestyle.classList.remove(
                 'oculto'
             );
+
         }
 
 
         setTexto(
             'titulo-modo',
-            'Modo Freestyle'
+            'MODO <span class="cor-destaque cor-azul">FREESTYLE</span>',
+            true
         );
 
     }
@@ -317,7 +333,9 @@ function renderizarTorneio(
         estado.torneio;
 
 
-    if (!dados) return;
+    if (!dados) {
+        return;
+    }
 
 
     setTexto(
@@ -352,6 +370,10 @@ function renderizarTorneio(
     );
 
 
+    /*
+     * Partida cancelada
+     */
+
     if (
         estado.status ===
         'cancelado'
@@ -367,6 +389,10 @@ function renderizarTorneio(
     }
 
 
+    /*
+     * Vitória por pontuação
+     */
+
     if (dados.vencedor) {
 
         setTexto(
@@ -378,6 +404,10 @@ function renderizarTorneio(
 
     }
 
+
+    /*
+     * Tempo esgotado
+     */
 
     if (
         estado.status ===
@@ -407,74 +437,158 @@ function renderizarTorneio(
 // FREESTYLE
 // =========================================================
 
-function renderizarFreestyle(estado) {
+function renderizarFreestyle(
+    estado
+) {
 
-    const dados = estado.freestyle;
+    const dados =
+        estado.freestyle;
+
 
     if (!dados) {
         return;
     }
 
+    
 
-    // =====================================================
-    // PARTICIPANTES
-    // =====================================================
-
-    setTexto(
-        'nome-free-robo1',
-        dados.robo1
-    );
-
-    setTexto(
-        'nome-free-robo2',
-        dados.robo2
-    );
+    const nomeRobo1 =
+        document.getElementById(
+            'nome-free-robo1'
+        );
 
 
-    // =====================================================
-    // CRONÔMETRO
-    // =====================================================
+    const nomeRobo2 =
+        document.getElementById(
+            'nome-free-robo2'
+        );
 
-    setTexto(
-        'cronometro-freestyle',
-        formatarTempo(
-            dados.tempoDecorrido
-        )
+
+    /*
+ * Selo de status (equilibra visualmente
+ * com o número grande do modo Torneio)
+ */
+
+const seloRobo1 =
+    document.getElementById(
+        'selo-free-robo1'
     );
 
 
-    // =====================================================
-    // RESULTADO
-    // =====================================================
+const seloRobo2 =
+    document.getElementById(
+        'selo-free-robo2'
+    );
+
+
+if (seloRobo1 && seloRobo2) {
+
+    const venceuRobo1 =
+        dados.vencedor &&
+        dados.vencedor === dados.robo1;
+
+
+    const venceuRobo2 =
+        dados.vencedor &&
+        dados.vencedor === dados.robo2;
+
+
+    seloRobo1.innerText =
+        venceuRobo1
+            ? '🏆 Campeão'
+            : '';
+
+    seloRobo1.classList.toggle(
+        'vencedor',
+        venceuRobo1
+    );
+
+
+    seloRobo2.innerText =
+        venceuRobo2
+            ? '🏆 Campeão'
+            : '';
+
+    seloRobo2.classList.toggle(
+        'vencedor',
+        venceuRobo2
+    );
+
+}
+
+    if (nomeRobo1) {
+
+        nomeRobo1.innerText =
+            dados.robo1 || 'Robô 1';
+
+    }
+
+
+    if (nomeRobo2) {
+
+        nomeRobo2.innerText =
+            dados.robo2 || 'Robô 2';
+
+    }
+
+
+    /*
+     * Cronômetro
+     */
+
+    const cronometro =
+        document.getElementById(
+            'cronometro-freestyle'
+        );
+
+
+    if (cronometro) {
+
+        cronometro.innerText =
+            formatarTempo(
+                dados.tempoDecorrido
+            );
+
+    }
+
+
+    /*
+     * Resultado
+     */
+
+    const vencedor =
+        document.getElementById(
+            'vencedor-freestyle'
+        );
+
+
+    if (!vencedor) {
+        return;
+    }
+
 
     if (
         estado.status ===
         'cancelado'
     ) {
 
-        setTexto(
-            'vencedor-freestyle',
-            'Partida Cancelada'
-        );
+        vencedor.innerText =
+            'Partida Cancelada';
 
         return;
+
     }
 
 
     if (dados.vencedor) {
 
-        setTexto(
-            'vencedor-freestyle',
-            `Vitória de ${dados.vencedor}!`
-        );
+        vencedor.innerText =
+            `Vitória de ${dados.vencedor}!`;
 
         return;
+
     }
 
 
-    setTexto(
-        'vencedor-freestyle',
-        ''
-    );
+    vencedor.innerText = '';
 
 }

@@ -66,10 +66,8 @@ body.tela-tv {
     background-color: var(--branco);
 
     background-image:
-        linear-gradient(
-            rgba(245, 245, 242, .90),
-            rgba(245, 245, 242, .50)
-        ),
+        linear-gradient(rgba(245, 245, 242, .90),
+            rgba(245, 245, 242, .50)),
         url('fundo-senac.jpg');
 
     background-size: cover;
@@ -100,16 +98,12 @@ body.tela-tv {
     pointer-events: none;
 
     background-image:
-        radial-gradient(
-            circle at 15% 20%,
+        radial-gradient(circle at 15% 20%,
             rgba(0, 0, 0, .035) 0 2px,
-            transparent 3px
-        ),
-        radial-gradient(
-            circle at 75% 65%,
+            transparent 3px),
+        radial-gradient(circle at 75% 65%,
             rgba(0, 0, 0, .03) 0 2px,
-            transparent 3px
-        );
+            transparent 3px);
 
     background-size: 28px 28px;
 
@@ -148,7 +142,7 @@ body.tela-tv {
    LOGO - TELA INICIAL
 ========================================= */
 
-.cabecalho-senac > img {
+.cabecalho-senac>img {
     display: block;
 
     width: min(650px, 52vw);
@@ -172,8 +166,8 @@ body.tela-tv {
    LOGO - PARTIDA ATIVA
 ========================================= */
 
-body:has(#modo-torneio:not(.oculto)) .cabecalho-senac > img,
-body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac > img {
+body:has(#modo-torneio:not(.oculto)) .cabecalho-senac>img,
+body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac>img {
     width: 125px;
 
     max-height: 80px;
@@ -238,15 +232,11 @@ body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac > img {
 
 .badge-modo::after {
     content: "«";
-
     margin-left: .55rem;
-
-    color: var(--azul);
-
+    color: var(--amarelo);
+    /* era var(--azul) */
     font-family: var(--fonte-texto);
-
     font-size: 1.2em;
-
     font-weight: 900;
 }
 
@@ -310,9 +300,7 @@ body:not(:has(section:not(.oculto))) .badge-modo {
     display: grid;
 
     grid-template-columns:
-        minmax(320px, 1fr)
-        minmax(280px, 360px)
-        minmax(320px, 1fr);
+        minmax(320px, 1fr) minmax(280px, 360px) minmax(320px, 1fr);
 
     align-items: center;
 
@@ -367,11 +355,9 @@ body:not(:has(section:not(.oculto))) .badge-modo {
 
 .card-azul {
     background:
-        linear-gradient(
-            145deg,
+        linear-gradient(145deg,
             #087487 0%,
-            #056477 100%
-        );
+            #056477 100%);
 
     transform: rotate(-2deg);
 }
@@ -383,11 +369,9 @@ body:not(:has(section:not(.oculto))) .badge-modo {
 
 .card-vermelho {
     background:
-        linear-gradient(
-            145deg,
+        linear-gradient(145deg,
             #d7281e 0%,
-            #b91d14 100%
-        );
+            #b91d14 100%);
 
     transform: rotate(2deg);
 }
@@ -409,11 +393,9 @@ body:not(:has(section:not(.oculto))) .badge-modo {
     border-radius: inherit;
 
     background-image:
-        radial-gradient(
-            circle,
+        radial-gradient(circle,
             rgba(255, 255, 255, .15) 2px,
-            transparent 3px
-        );
+            transparent 3px);
 
     background-size: 19px 19px;
 
@@ -524,8 +506,7 @@ body:not(:has(section:not(.oculto))) .badge-modo {
     pointer-events: none;
 
     filter:
-        drop-shadow(5px 7px 0 rgba(0, 0, 0, .14))
-        drop-shadow(0 10px 12px rgba(0, 0, 0, .12));
+        drop-shadow(5px 7px 0 rgba(0, 0, 0, .14)) drop-shadow(0 10px 12px rgba(0, 0, 0, .12));
 }
 
 
@@ -569,11 +550,9 @@ body:not(:has(section:not(.oculto))) .badge-modo {
     justify-content: center;
 
     background:
-        linear-gradient(
-            145deg,
+        linear-gradient(145deg,
             #181818,
-            #090909
-        );
+            #090909);
 
     border-radius: 18px;
 
@@ -667,24 +646,33 @@ body:not(:has(section:not(.oculto))) .badge-modo {
 
 .mensagem-vencedor {
     position: absolute;
-
-    bottom: 52px;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
 
     margin: 0;
+    padding: .6rem 1.4rem;
 
-    color: white;
+    background: var(--preto);
+    color: var(--amarelo);
+
+    border-radius: 8px;
+
+    box-shadow: 5px 6px 0 rgba(0, 0, 0, .18);
 
     font-family: var(--fonte-impacto);
-
-    font-size: 1.6rem;
-
+    font-size: 1.5rem;
     line-height: 1;
-
     letter-spacing: 1px;
 
     text-align: center;
-
     text-transform: uppercase;
+
+    white-space: nowrap;
+}
+
+.mensagem-vencedor:empty {
+    display: none;
 }
 
 
@@ -704,10 +692,7 @@ body:not(:has(section:not(.oculto))) .badge-modo {
     grid-template-columns: 1fr;
 
     grid-template-rows:
-        auto
-        auto
-        auto
-        auto;
+        auto auto auto auto;
 
     gap: 1.2rem;
 
@@ -715,383 +700,6 @@ body:not(:has(section:not(.oculto))) .badge-modo {
 }
 
 
-/* =========================================================
-   TÍTULO DO FREESTYLE
-========================================================= */
-
-.titulo-freestyle {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: .8rem;
-
-    margin-bottom: .2rem;
-
-    color: var(--preto);
-
-    font-family: var(--fonte-impacto);
-
-    font-size: clamp(2.5rem, 4vw, 4.8rem);
-
-    line-height: .9;
-
-    letter-spacing: 1px;
-
-    text-align: center;
-
-    text-transform: uppercase;
-}
-
-
-.titulo-freestyle strong {
-    color: var(--vermelho);
-
-    font-weight: inherit;
-}
-
-
-.titulo-freestyle .seta {
-    font-family: var(--fonte-texto);
-
-    font-size: .8em;
-
-    font-weight: 900;
-}
-
-
-.titulo-freestyle .seta-esquerda {
-    color: var(--vermelho);
-}
-
-
-.titulo-freestyle .seta-direita {
-    color: var(--azul);
-}
-
-
-/* =========================================================
-   PLACAR PRINCIPAL
-========================================================= */
-
-.placar-freestyle {
-    width: 100%;
-
-    display: grid;
-
-    grid-template-columns:
-        minmax(280px, 1fr)
-        minmax(280px, 360px)
-        minmax(280px, 1fr);
-
-    align-items: center;
-
-    gap: 0;
-}
-
-
-/* =========================================================
-   COMPETIDORES FREESTYLE
-========================================================= */
-
-.competidor-freestyle {
-    position: relative;
-
-    min-height: 300px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: 2rem;
-
-    overflow: visible;
-
-    border-radius: 14px;
-
-    color: white;
-
-    box-shadow:
-        7px 9px 0 rgba(0, 0, 0, .12);
-
-    z-index: 2;
-}
-
-
-/* =========================================
-   AZUL
-========================================= */
-
-.freestyle-azul {
-    background:
-        linear-gradient(
-            145deg,
-            #087487,
-            #056477
-        );
-
-    transform: rotate(-1.5deg);
-}
-
-
-/* =========================================
-   VERMELHO
-========================================= */
-
-.freestyle-vermelho {
-    background:
-        linear-gradient(
-            145deg,
-            #d7281e,
-            #b91d14
-        );
-
-    transform: rotate(1.5deg);
-}
-
-
-/* =========================================
-   TEXTURA
-========================================= */
-
-.competidor-freestyle::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    border-radius: inherit;
-
-    background-image:
-        radial-gradient(
-            circle,
-            rgba(255, 255, 255, .15) 2px,
-            transparent 3px
-        );
-
-    background-size: 18px 18px;
-
-    opacity: .25;
-
-    pointer-events: none;
-}
-
-
-/* =========================================================
-   PERSONAGENS FREESTYLE
-========================================================= */
-
-.personagem-freestyle {
-    position: absolute;
-
-    z-index: 10;
-
-    width: 190px;
-    height: 190px;
-
-    object-fit: contain;
-
-    pointer-events: none;
-
-    filter:
-        drop-shadow(5px 6px 0 rgba(0, 0, 0, .14))
-        drop-shadow(0 7px 10px rgba(0, 0, 0, .12));
-}
-
-
-.personagem-freestyle-esquerda {
-    top: -80px;
-    left: -25px;
-
-    transform: rotate(-3deg);
-}
-
-
-.personagem-freestyle-direita {
-    top: -80px;
-    right: -25px;
-
-    transform: rotate(3deg);
-}
-
-
-/* =========================================================
-   NOME DOS ROBÔS FREESTYLE
-========================================================= */
-
-.nome-freestyle {
-    position: relative;
-
-    z-index: 5;
-
-    width: 82%;
-
-    min-height: 54px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: .7rem 1rem;
-
-    background: var(--preto);
-
-    color: white;
-
-    border-radius: 3px;
-
-    font-family: var(--fonte-impacto);
-
-    font-size: clamp(1.8rem, 2.5vw, 2.8rem);
-
-    line-height: 1;
-
-    letter-spacing: 1px;
-
-    text-align: center;
-
-    text-transform: uppercase;
-
-    overflow-wrap: anywhere;
-
-    word-break: break-word;
-}
-
-
-/* =========================================================
-   PONTUAÇÃO FREESTYLE
-========================================================= */
-
-.pontos-freestyle {
-    position: relative;
-
-    z-index: 5;
-
-    margin-top: 1rem;
-
-    color: white;
-
-    font-family: var(--fonte-impacto);
-
-    font-size: clamp(6rem, 10vw, 10rem);
-
-    line-height: .8;
-
-    letter-spacing: 1px;
-
-    text-shadow:
-        4px 5px 0 rgba(0, 0, 0, .12);
-}
-
-
-/* =========================================================
-   CRONÔMETRO CENTRAL FREESTYLE
-========================================================= */
-
-.tempo-freestyle {
-    position: relative;
-
-    z-index: 5;
-
-    min-height: 300px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: 2rem 1.2rem;
-
-    background:
-        linear-gradient(
-            145deg,
-            #181818,
-            #090909
-        );
-
-    color: white;
-
-    border-radius: 14px;
-
-    box-shadow:
-        7px 9px 0 rgba(0, 0, 0, .14);
-}
-
-
-/* =========================================================
-   LABEL TEMPO FREESTYLE
-========================================================= */
-
-.label-tempo-freestyle {
-    display: flex;
-
-    align-items: center;
-
-    gap: .6rem;
-
-    margin-bottom: 1rem;
-
-    color: var(--amarelo);
-
-    font-family: var(--fonte-texto);
-
-    font-size: 1.05rem;
-
-    font-weight: 900;
-
-    letter-spacing: 2px;
-
-    text-transform: uppercase;
-}
-
-
-.label-tempo-freestyle span {
-    font-size: 1.3em;
-}
-
-
-/* =========================================================
-   CRONÔMETRO FREESTYLE
-========================================================= */
-
-.tempo-freestyle .cronometro-grande {
-    width: 100%;
-
-    padding: 0;
-
-    background: transparent;
-
-    border: none;
-
-    color: white;
-
-    font-family: var(--fonte-impacto);
-
-    font-size: clamp(5rem, 7vw, 7.5rem);
-
-    line-height: .85;
-
-    letter-spacing: 2px;
-
-    text-align: center;
-
-    box-shadow: none;
-
-    text-shadow:
-        4px 5px 0 rgba(0, 0, 0, .22);
-}
 
 
 /* =========================================================
@@ -1195,6 +803,15 @@ body:not(:has(section:not(.oculto))) .badge-modo {
 /* =========================================================
    ITENS DO RANKING
 ========================================================= */
+
+.historico-vazio {
+    justify-content: center !important;
+    border-left-color: #ccc !important;
+    color: #999;
+    font-style: italic;
+    font-weight: 700;
+}
+
 
 .historico li {
     position: relative;
@@ -1372,15 +989,54 @@ body:not(:has(section:not(.oculto))) .badge-modo {
 ========================================================= */
 
 body.tela-controle {
+    position: relative;
+
     min-height: 100vh;
 
-    background: #f4f4f1;
+    background-color: var(--branco);
 
-    color: #333333;
+    background-image:
+        linear-gradient(rgba(245, 245, 242, .93),
+            rgba(245, 245, 242, .80)),
+        url('fundo-senac.jpg');
 
-    padding: 1rem;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+
+    color: var(--preto);
+
+    padding: 1rem 1rem 3rem;
 
     font-family: var(--fonte-texto);
+}
+
+
+/* =========================================
+   CABEÇALHO DO CONTROLE
+========================================= */
+
+.cabecalho-controle {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+
+    max-width: 520px;
+    margin: 0 auto 1.2rem;
+    padding: .5rem .2rem;
+}
+
+.cabecalho-controle img {
+    width: 54px;
+    height: auto;
+}
+
+.cabecalho-controle h1 {
+    font-family: var(--fonte-impacto);
+    font-size: 1.5rem;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--preto);
 }
 
 
@@ -1389,16 +1045,25 @@ body.tela-controle {
 ========================================= */
 
 .card-controle {
-    background: white;
-
+    max-width: 520px;
+    margin: 0 auto 1.5rem;
     padding: 1.5rem;
 
+    background: var(--branco-puro);
+
+    border: 2px solid var(--preto);
     border-radius: 12px;
 
-    box-shadow:
-        0 5px 20px rgba(0, 0, 0, .08);
+    box-shadow: 6px 8px 0 rgba(0, 0, 0, .15);
+}
 
-    margin-bottom: 1.5rem;
+.card-controle h3 {
+    font-family: var(--fonte-impacto);
+    font-size: 1.4rem;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    color: var(--preto);
 }
 
 
@@ -1406,24 +1071,28 @@ body.tela-controle {
    INPUT
 ========================================= */
 
-input[type="text"] {
+input[type="text"],
+input[type="number"],
+input[type="password"] {
     width: 100%;
-
     padding: 1rem;
-
     margin-bottom: 1rem;
 
-    font-size: 1.2rem;
+    font-family: var(--fonte-texto);
+    font-size: 1.15rem;
+    font-weight: 700;
 
-    border: 2px solid #dddddd;
-
-    border-radius: 6px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
 
     outline: none;
+
+    transition: border-color .15s ease;
 }
 
-
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus {
     border-color: var(--azul);
 }
 
@@ -1434,24 +1103,42 @@ input[type="text"]:focus {
 
 button {
     width: 100%;
-
     padding: 1rem;
+    margin-bottom: .6rem;
 
-    margin-bottom: .5rem;
+    font-family: var(--fonte-texto);
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: .3px;
+    text-transform: uppercase;
 
-    font-size: 1.2rem;
+    border: 2px solid var(--preto);
+    border-radius: 8px;
 
-    font-weight: bold;
-
-    border: none;
-
-    border-radius: 6px;
+    box-shadow: 4px 5px 0 rgba(0, 0, 0, .18);
 
     cursor: pointer;
 
     transition:
-        transform .15s ease,
-        opacity .15s ease;
+        transform .12s ease,
+        box-shadow .12s ease,
+        opacity .12s ease;
+}
+
+button:hover {
+    opacity: .93;
+}
+
+button:active {
+    transform: translate(2px, 3px);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, .18);
+}
+
+button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none !important;
 }
 
 
@@ -1465,92 +1152,182 @@ button:active {
 }
 
 
-/* =========================================
-   BOTÕES COLORIDOS
-========================================= */
-
 .btn-primario {
     background: var(--preto);
-
     color: white;
+    border-color: var(--preto);
 }
-
 
 .btn-sucesso {
     background: #2a9d8f;
-
     color: white;
+    border-color: var(--preto);
 }
-
 
 .btn-alerta {
     background: var(--amarelo);
-
     color: var(--preto);
+    border-color: var(--preto);
 }
-
 
 .btn-azul {
     background: var(--azul);
-
     color: white;
+    border-color: var(--preto);
 }
-
 
 .btn-vermelho {
     background: var(--vermelho);
-
     color: white;
+    border-color: var(--preto);
 }
-
-/* =========================================================
-   CONTROLE — AÇÕES SECUNDÁRIAS
-========================================================= */
 
 .btn-corrigir {
     background: transparent;
-    color: #666;
-    border: 1px solid #ddd;
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 0.55rem;
-    margin-top: 0.25rem;
-    margin-bottom: 0;
+    color: #555;
+    border: 2px dashed #ccc;
+    box-shadow: none;
 }
-
 
 .btn-corrigir:hover {
     background: #f2f2f2;
+    box-shadow: none;
 }
 
-
-.btn-corrigir:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
+.botoes-modo button.ativo {
+    outline: 3px solid var(--amarelo);
+    outline-offset: -3px;
 }
 
+/* =========================================================
+   TELA DE LOGIN
+========================================================= */
 
-.grupo-pontuacao {
+.tela-login {
+    min-height: 100vh;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
 }
 
+.card-login {
+    width: 100%;
+    max-width: 360px;
+    background: white;
+    padding: 2rem 1.5rem;
+    border-radius: 14px;
+    text-align: center;
+    border: 2px solid var(--preto);
+    box-shadow: 6px 8px 0 rgba(0, 0, 0, .15);
 
-.btn-iniciar-partida {
-    font-size: 1.35rem;
-    padding: 1.2rem;
 }
 
+.card-login h2 {
+    font-family: var(--fonte-impacto);
+    text-transform: uppercase;
+    letter-spacing: .5px;
 
-.btn-cancelar {
-    margin-top: 1rem;
 }
 
-
-.descricao-controle {
+.card-login p {
     color: #666;
-    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+    font-size: .95rem;
+}
+
+.card-login input {
+    width: 100%;
+    padding: 1rem;
     margin-bottom: 1rem;
+    font-size: 1.1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    text-align: center;
+}
+
+.card-login input:focus {
+    border-color: var(--azul);
+}
+
+.msg-erro {
+    color: var(--vermelho);
+    font-weight: 700;
+    font-size: .9rem;
+    margin-top: .8rem;
+}
+
+
+/* =========================================================
+   INDICADOR DE CONEXÃO
+========================================================= */
+
+.status-conexao {
+    position: fixed;
+    top: .6rem;
+    right: .6rem;
+    z-index: 50;
+
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+
+    padding: .4rem .8rem;
+    border-radius: 999px;
+
+    font-size: .75rem;
+    font-weight: 700;
+
+    background: white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
+}
+
+.status-conexao .ponto {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-online {
+    color: #1d7a4c;
+}
+
+.status-online .ponto {
+    background: #2a9d8f;
+    box-shadow: 0 0 0 3px rgba(42, 157, 143, .25);
+}
+
+.status-offline {
+    color: var(--vermelho);
+}
+
+.status-offline .ponto {
+    background: var(--vermelho);
+    box-shadow: 0 0 0 3px rgba(197, 31, 22, .25);
+    animation: piscar 1s infinite;
+}
+
+@keyframes piscar {
+    50% {
+        opacity: .3;
+    }
+}
+
+
+/* =========================================================
+   BOTÕES DESABILITADOS (estado geral)
+========================================================= */
+
+button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none;
+}
+
+button:disabled:hover {
+    opacity: .4;
 }
 
 
@@ -1580,9 +1357,7 @@ button:active {
 
     .layout-torneio {
         grid-template-columns:
-            minmax(260px, 1fr)
-            minmax(240px, 300px)
-            minmax(260px, 1fr);
+            minmax(260px, 1fr) minmax(240px, 300px) minmax(260px, 1fr);
     }
 
 
@@ -1616,63 +1391,8 @@ button:active {
 
         margin: 0 -15px;
     }
-
-
-    /* =====================================
-       FREESTYLE
-    ===================================== */
-
-    .placar-freestyle {
-        grid-template-columns:
-            minmax(240px, 1fr)
-            minmax(240px, 300px)
-            minmax(240px, 1fr);
-    }
-
-
-    .competidor-freestyle {
-        min-height: 270px;
-    }
-
-
-    .personagem-freestyle {
-        width: 165px;
-        height: 165px;
-    }
-
-
-    .personagem-freestyle-esquerda {
-        top: -65px;
-        left: -20px;
-    }
-
-
-    .personagem-freestyle-direita {
-        top: -65px;
-        right: -20px;
-    }
-
-
-    .nome-freestyle {
-        width: 85%;
-
-        font-size: 2rem;
-    }
-
-
-    .pontos-freestyle {
-        font-size: 7.5rem;
-    }
-
-
-    .tempo-freestyle {
-        min-height: 270px;
-    }
-
-
-    .tempo-freestyle .cronometro-grande {
-        font-size: 6rem;
-    }
+ 
+  
 }
 
 
@@ -1742,59 +1462,6 @@ button:active {
     }
 
 
-    /* =====================================
-       FREESTYLE
-    ===================================== */
-
-    .placar-freestyle {
-        grid-template-columns: 1fr;
-
-        gap: 1rem;
-    }
-
-
-    .competidor-freestyle {
-        min-height: 260px;
-
-        transform: none;
-    }
-
-
-    .freestyle-azul,
-    .freestyle-vermelho {
-        transform: none;
-    }
-
-
-    .tempo-freestyle {
-        min-height: 240px;
-
-        order: -1;
-    }
-
-
-    .personagem-freestyle {
-        width: 160px;
-        height: 160px;
-    }
-
-
-    .personagem-freestyle-esquerda {
-        top: -65px;
-        left: -15px;
-    }
-
-
-    .personagem-freestyle-direita {
-        top: -65px;
-        right: -15px;
-    }
-
-
-    .titulo-freestyle {
-        font-size: 3rem;
-    }
-
 
     .historico {
         margin-top: .5rem;
@@ -1817,14 +1484,26 @@ button:active {
     }
 
 
-    .cabecalho-senac > img {
+    .cabecalho-senac>img {
         width: 260px;
     }
 
 
-    body:has(#modo-torneio:not(.oculto)) .cabecalho-senac > img,
-    body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac > img {
+    body:has(#modo-torneio:not(.oculto)) .cabecalho-senac>img,
+    body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac>img {
         width: 90px;
+    }
+
+    .cor-destaque {
+        font-weight: inherit;
+    }
+
+    .cor-destaque.cor-vermelho {
+        color: var(--vermelho);
+    }
+
+    .cor-destaque.cor-azul {
+        color: var(--azul);
     }
 
 
@@ -1877,81 +1556,38 @@ button:active {
     }
 
 
-    /* =====================================
-       FREESTYLE
-    ===================================== */
+    /* =========================================
+   SELO FREESTYLE (equivalente ao número
+   do modo Torneio, mantém o mesmo peso visual)
+========================================= */
 
-    .titulo-freestyle {
-        gap: .35rem;
+    .selo-freestyle {
+        position: relative;
+        z-index: 3;
 
-        font-size: 2.3rem;
+        margin-top: 1.8rem;
+
+        min-height: 3rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        color: rgba(255, 255, 255, .3);
+
+        font-family: var(--fonte-impacto);
+        font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+
+        letter-spacing: 1px;
+        text-transform: uppercase;
+
+        transition: color .3s ease;
     }
 
+    .selo-freestyle.vencedor {
+        color: var(--amarelo);
 
-    .titulo-freestyle .seta {
-        font-size: 1.8rem;
-    }
-
-
-    .competidor-freestyle {
-        min-height: 220px;
-
-        padding: 1.5rem 1rem;
-    }
-
-
-    .personagem-freestyle {
-        width: 130px;
-        height: 130px;
-    }
-
-
-    .personagem-freestyle-esquerda {
-        top: -50px;
-        left: -10px;
-    }
-
-
-    .personagem-freestyle-direita {
-        top: -50px;
-        right: -10px;
-    }
-
-
-    .nome-freestyle {
-        width: 88%;
-
-        min-height: 48px;
-
-        padding: .6rem .8rem;
-
-        font-size: 1.7rem;
-    }
-
-
-    .pontos-freestyle {
-        margin-top: .8rem;
-
-        font-size: 6rem;
-    }
-
-
-    .tempo-freestyle {
-        min-height: 190px;
-
-        padding: 1rem;
-    }
-
-
-    .label-tempo-freestyle {
-        font-size: .8rem;
-
-        margin-bottom: .6rem;
-    }
-
-
-    .tempo-freestyle .cronometro-grande {
-        font-size: 5rem;
+        text-shadow: 3px 4px 0 rgba(0, 0, 0, .25);
     }
 
 
@@ -1996,6 +1632,16 @@ button:active {
         padding: .8rem;
 
         font-size: .95rem;
+    }
+
+    .titulo-ranking::before {
+        content: "» ";
+        color: var(--vermelho);
+    }
+
+    .titulo-ranking::after {
+        content: " «";
+        color: var(--amarelo);
     }
 
 

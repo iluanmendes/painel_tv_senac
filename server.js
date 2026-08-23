@@ -103,14 +103,14 @@ if (fs.existsSync(ARQUIVO_JSON)) {
 
 function salvarDados() {
 
-    fs.writeFileSync(
-        ARQUIVO_JSON,
-        JSON.stringify(
-            dadosApp,
-            null,
-            2
-        )
-    );
+    try {
+        fs.writeFileSync(
+            ARQUIVO_JSON,
+            JSON.stringify(dadosApp, null, 2)
+        );
+    } catch (erro) {
+        console.error('Erro ao salvar ranking.json:', erro);
+    }
 
 }
 
@@ -342,61 +342,44 @@ io.on('connection', (socket) => {
 
                 case 'MUDAR_MODO':
 
-                    pararTimer();
-
-                    estadoCompeticao.modo =
-                        acao.modo;
-
-                    /*
-                     * Ao entrar no Torneio fora de uma
-                     * partida em andamento, mostra
-                     * imediatamente o tempo configurado.
-                     */
+                    // Não reseta se já estamos no mesmo modo com uma partida rodando
+                    // (evita apagar uma partida em andamento por clique acidental na aba)
                     if (
-                        acao.modo === 'torneio' &&
-                        estadoCompeticao.status !==
-                        'em_andamento'
+                        estadoCompeticao.modo === acao.modo &&
+                        estadoCompeticao.status === 'em_andamento'
                     ) {
-
-                        estadoCompeticao.status =
-                            'aguardando';
-
-                        estadoCompeticao.torneio =
-                        {
-                            robo1:
-                                'Robô 1',
-
-                            robo2:
-                                'Robô 2',
-
-                            pontos1:
-                                0,
-
-                            pontos2:
-                                0,
-
-                            tempoRestante:
-                                dadosApp
-                                    .configuracoes
-                                    .tempoTorneio ||
-                                180,
-
-                            vencedor:
-                                null
-                        };
-
-                    } else {
-
-                        estadoCompeticao.status =
-                            'aguardando';
-
+                        return;
                     }
 
+                    pararTimer();
+
+                    estadoCompeticao.modo = acao.modo;
+                    estadoCompeticao.status = 'aguardando';
+
+                    if (acao.modo === 'torneio') {
+
+                        estadoCompeticao.torneio = {
+                            robo1: 'Robô 1',
+                            robo2: 'Robô 2',
+                            pontos1: 0,
+                            pontos2: 0,
+                            tempoRestante: dadosApp.configuracoes.tempoTorneio || 180,
+                            vencedor: null
+                        };
+                    }
+
+                    if (acao.modo === 'freestyle') {
+
+                        estadoCompeticao.freestyle = {
+                            robo1: 'Robô 1',
+                            robo2: 'Robô 2',
+                            tempoDecorrido: 0,
+                            vencedor: null
+                        };
+                    }
 
                     transmitirEstado();
-
                     break;
-
 
                 // =========================================
                 // PREPARAR TORNEIO
@@ -534,11 +517,7 @@ io.on('connection', (socket) => {
                     }
 
 
-                    /*
-                     * REGRA IMPORTANTE:
-                     * só pode pontuar com a partida
-                     * efetivamente em andamento.
-                     */
+                    // Só permite pontuar durante a partida
 
                     if (
                         estadoCompeticao.status !==
@@ -555,31 +534,45 @@ io.on('connection', (socket) => {
                     }
 
 
-                    if (
-                        ![1, 2].includes(
-                            Number(acao.robo)
-                        )
-                    ) {
-                        return;
-                    }
+                    // Normaliza o número do robô
 
+                    const robo =
+                        Number(acao.robo);
+
+
+                    // Normaliza a pontuação
 
                     const pontos =
                         Number(acao.pontos);
 
 
+                    // Aceita somente robôs 1 e 2
+
                     if (
-                        ![0, 1, 2].includes(
-                            pontos
-                        )
+                        ![1, 2].includes(robo)
                     ) {
+
                         return;
+
                     }
 
 
+                    // Aceita somente 0, 1 ou 2 pontos
+
                     if (
-                        acao.robo === 1
+                        ![0, 1, 2].includes(pontos)
                     ) {
+
+                        return;
+
+                    }
+
+
+                    // ==============================
+                    // ROBÔ AZUL
+                    // ==============================
+
+                    if (robo === 1) {
 
                         estadoCompeticao
                             .torneio
@@ -589,9 +582,11 @@ io.on('connection', (socket) => {
                     }
 
 
-                    if (
-                        acao.robo === 2
-                    ) {
+                    // ==============================
+                    // ROBÔ VERMELHO
+                    // ==============================
+
+                    if (robo === 2) {
 
                         estadoCompeticao
                             .torneio
@@ -601,9 +596,11 @@ io.on('connection', (socket) => {
                     }
 
 
-                    if (
-                        pontos >= 2
-                    ) {
+                    // ==============================
+                    // VITÓRIA
+                    // ==============================
+
+                    if (pontos >= 2) {
 
                         pararTimer();
 
@@ -614,10 +611,11 @@ io.on('connection', (socket) => {
                         estadoCompeticao
                             .torneio
                             .vencedor =
-                            acao.robo === 1
+                            robo === 1
                                 ? estadoCompeticao
                                     .torneio
                                     .robo1
+
                                 : estadoCompeticao
                                     .torneio
                                     .robo2;
