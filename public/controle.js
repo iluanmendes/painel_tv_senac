@@ -1,67 +1,135 @@
 const socket = io();
 
-// 1. Solicita a senha ao abrir a página
+// 1. Autenticação
 const senhaDigitada = prompt("Digite a senha para acessar o controle:");
 
 if (!senhaDigitada) {
-    // Se o usuário cancelar, avisa e corta a conexão
     document.getElementById('tela-bloqueio').innerHTML = "<h2 style='color: var(--vermelho);'>Acesso Cancelado.</h2>";
     socket.disconnect();
 } else {
-    // Envia a senha para o servidor validar
     socket.emit('autenticar_controle', senhaDigitada);
 }
 
-// 2. Tratamento das respostas do Servidor
 socket.on('erro_autenticacao', (mensagem) => {
     alert(mensagem);
     document.getElementById('tela-bloqueio').innerHTML = `<h2 style='color: var(--vermelho);'>Acesso Negado:<br>${mensagem}</h2>`;
 });
 
 socket.on('controle_autorizado', () => {
-    // Se a senha estiver correta, esconde a trava e revela o painel
     document.getElementById('tela-bloqueio').classList.add('oculto');
     document.getElementById('conteudo-controle').classList.remove('oculto');
 });
 
-
-
-
-
-// Controle de Interface do Smartphone
-document.getElementById('btn-modo-torneio').addEventListener('click', () => {
-    document.getElementById('controles-torneio').classList.remove('oculto');
-    document.getElementById('controles-freestyle').classList.add('oculto');
-    socket.emit('comando_controle', { tipo: 'MUDAR_MODO', modo: 'torneio' });
+// Recebe configurações do servidor para exibir no input
+socket.on('carregar_dados', (dados) => {
+    document.getElementById('input-tempo-torneio').value = dados.configuracoes.tempoTorneio;
 });
 
-document.getElementById('btn-modo-freestyle').addEventListener('click', () => {
-    document.getElementById('controles-freestyle').classList.remove('oculto');
+// 2. Navegação do Menu
+function alternarModo(idModo, comandoSocket) {
     document.getElementById('controles-torneio').classList.add('oculto');
-    socket.emit('comando_controle', { tipo: 'MUDAR_MODO', modo: 'freestyle' });
+    document.getElementById('controles-freestyle').classList.add('oculto');
+    document.getElementById('controles-config').classList.add('oculto');
+    document.getElementById(idModo).classList.remove('oculto');
+    if (comandoSocket) socket.emit('comando_controle', { tipo: 'MUDAR_MODO', modo: comandoSocket });
+}
+
+document.getElementById('btn-modo-torneio').addEventListener('click', () => alternarModo('controles-torneio', 'torneio'));
+document.getElementById('btn-modo-freestyle').addEventListener('click', () => alternarModo('controles-freestyle', 'freestyle'));
+document.getElementById('btn-modo-config').addEventListener('click', () => alternarModo('controles-config', null));
+
+// --- CONFIGURAÇÕES ---
+document.getElementById('btn-salvar-config').addEventListener('click', () => {
+    const tempo = parseInt(document.getElementById('input-tempo-torneio').value);
+    if(tempo > 0) {
+        socket.emit('salvar_configuracoes', { tempoTorneio: tempo });
+        alert("Configuração salva com sucesso!");
+    } else {
+        alert("Digite um tempo válido maior que 0.");
+    }
 });
 
-// Ações do Torneio
+// --- AÇÕES DO TORNEIO ---
 let pontosR1 = 0;
 let pontosR2 = 0;
+let timerTorneioRodando = false;
 
-document.getElementById('btn-iniciar-torneio').addEventListener('click', () => {
-    const robo1 = document.getElementById('input-robo1').value || 'Robô Azul';
-    const robo2 = document.getElementById('input-robo2').value || 'Robô Vermelho';
+const inputR1 = document.getElementById('input-robo1');
+const inputR2 = document.getElementById('input-robo2');
+const acoesPreparo = document.getElementById('acoes-preparo-torneio');
+const acoesJogo = document.getElementById('acoes-jogo-torneio');
+const btnIniciarTempo = document.getElementById('btn-iniciar-tempo-torneio');
+const btnPausarTempo = document.getElementById('btn-pausar-tempo-torneio');
+
+// Etapa 1: Preparar Luta (Envia os nomes e zera placar)
+document.getElementById('btn-preparar-torneio').addEventListener('click', () => {
+    const robo1 = inputR1.value || 'Robô Azul';
+    const robo2 = inputR2.value || 'Robô Vermelho';
     pontosR1 = 0;
     pontosR2 = 0;
-    socket.emit('comando_controle', { tipo: 'INICIAR_TORNEIO', robo1, robo2 });
+    
+    inputR1.disabled = true;
+    inputR2.disabled = true;
+    acoesPreparo.classList.add('oculto');
+    acoesJogo.classList.remove('oculto');
+    
+    // Mostra na TV, mas não inicia o tempo
+    socket.emit('comando_controle', { tipo: 'PREPARAR_TORNEIO', robo1, robo2 });
 });
 
+// Etapa 2: Controlar Tempo
+btnIniciarTempo.addEventListener('click', () => {
+    timerTorneioRodando = true;
+    btnIniciarTempo.classList.add('oculto');
+    btnPausarTempo.classList.remove('oculto');
+    socket.emit('comando_controle', { tipo: 'RETOMAR_TORNEIO' });
+});
+
+btnPausarTempo.addEventListener('click', () => {
+    timerTorneioRodando = false;
+    btnPausarTempo.classList.add('oculto');
+    btnIniciarTempo.classList.remove('oculto');
+    btnIniciarTempo.innerText = "▶️ Retomar Relógio";
+    socket.emit('comando_controle', { tipo: 'PAUSAR_TORNEIO' });
+});
+
+// Etapa 3: Estourar e Desfazer
+function enviarPontoTorneio(robo, pontos) {
+    socket.emit('comando_controle', { tipo: 'PONTUAR_TORNEIO', robo, pontos });
+}
+
 document.getElementById('btn-ponto-robo1').addEventListener('click', () => {
-    if (pontosR1 < 2) pontosR1++;
-    socket.emit('comando_controle', { tipo: 'PONTUAR_TORNEIO', robo: 1, pontos: pontosR1 });
+    if(pontosR1 < 2) { pontosR1++; enviarPontoTorneio(1, pontosR1); }
+});
+document.getElementById('btn-desfazer-robo1').addEventListener('click', () => {
+    if(pontosR1 > 0) { pontosR1--; enviarPontoTorneio(1, pontosR1); }
 });
 
 document.getElementById('btn-ponto-robo2').addEventListener('click', () => {
-    if (pontosR2 < 2) pontosR2++;
-    socket.emit('comando_controle', { tipo: 'PONTUAR_TORNEIO', robo: 2, pontos: pontosR2 });
+    if(pontosR2 < 2) { pontosR2++; enviarPontoTorneio(2, pontosR2); }
 });
+document.getElementById('btn-desfazer-robo2').addEventListener('click', () => {
+    if(pontosR2 > 0) { pontosR2--; enviarPontoTorneio(2, pontosR2); }
+});
+
+// Etapa 4: Cancelar / Resetar Interface
+document.getElementById('btn-cancelar-torneio').addEventListener('click', resetarInterfaceTorneio);
+
+function resetarInterfaceTorneio() {
+    inputR1.disabled = false; inputR1.value = "";
+    inputR2.disabled = false; inputR2.value = "";
+    acoesJogo.classList.add('oculto');
+    acoesPreparo.classList.remove('oculto');
+    
+    btnIniciarTempo.classList.remove('oculto');
+    btnIniciarTempo.innerText = "▶️ Iniciar Relógio";
+    btnPausarTempo.classList.add('oculto');
+    
+    socket.emit('comando_controle', { tipo: 'CANCELAR_TORNEIO' });
+}
+
+// --- Ações do Freestyle (Mantidas do seu código original) ---
+// (Você pode colar o seu bloco atual de código Freestyle aqui abaixo)
 
 // --- Ações do Freestyle (1v1) ---
 const inputFreeRobo1 = document.getElementById('input-free-robo1');

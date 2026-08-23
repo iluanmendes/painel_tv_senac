@@ -1,23 +1,17 @@
 const socket = io();
 
-// Elementos Torneio
-const secTorneio = document.getElementById('modo-torneio');
-const robo1Nome = document.getElementById('nome-robo1');
-const robo2Nome = document.getElementById('nome-robo2');
-const bexigas1 = document.getElementById('bexigas-robo1');
-const bexigas2 = document.getElementById('bexigas-robo2');
-const cronometroTorneio = document.getElementById('cronometro-torneio');
-const vencedorTorneio = document.getElementById('vencedor-torneio');
-const tituloModo = document.getElementById('titulo-modo');
-
-// Elementos Freestyle
-const secFreestyle = document.getElementById('modo-freestyle');
-const cronometroFreestyle = document.getElementById('cronometro-freestyle');
-const listaFreestyle = document.getElementById('lista-freestyle');
-
-let timerInterval;
+// Variáveis Globais de Configuração
 let rankingFreestyle = [];
+let configuracoesApp = { tempoTorneio: 180 };
+let timerInterval;
 let tempoAtualSegundos = 0;
+
+// Recebe os dados e configurações do JSON assim que conecta
+socket.on('carregar_dados', (dados) => {
+    rankingFreestyle = dados.rankingFreestyle || [];
+    configuracoesApp = dados.configuracoes;
+    atualizarListaFreestyle();
+});
 
 function formatarTempo(segundos) {
     const min = String(Math.floor(segundos / 60)).padStart(2, '0');
@@ -27,49 +21,82 @@ function formatarTempo(segundos) {
 
 socket.on('atualiza_tela', (acao) => {
     switch(acao.tipo) {
+        
+        // --- GERENCIAMENTO DE MODO ---
         case 'MUDAR_MODO':
             clearInterval(timerInterval);
+            document.getElementById('vencedor-torneio').innerText = ""; // Limpa lixo da tela
             if(acao.modo === 'torneio') {
-                secTorneio.classList.remove('oculto');
-                secFreestyle.classList.add('oculto');
-                tituloModo.innerText = "Modo Torneio";
+                document.getElementById('modo-torneio').classList.remove('oculto');
+                document.getElementById('modo-freestyle').classList.add('oculto');
+                document.getElementById('titulo-modo').innerText = "Modo Torneio";
             } else {
-                secTorneio.classList.add('oculto');
-                secFreestyle.classList.remove('oculto');
-                tituloModo.innerText = "Modo Freestyle";
+                document.getElementById('modo-torneio').classList.add('oculto');
+                document.getElementById('modo-freestyle').classList.remove('oculto');
+                document.getElementById('titulo-modo').innerText = "Modo Freestyle";
             }
             break;
 
-        case 'INICIAR_TORNEIO':
-            robo1Nome.innerText = acao.robo1;
-            robo2Nome.innerText = acao.robo2;
-            bexigas1.innerText = "0";
-            bexigas2.innerText = "0";
-            vencedorTorneio.innerText = "";
-            tempoAtualSegundos = 180; // 3 Minutos
-            cronometroTorneio.innerText = formatarTempo(tempoAtualSegundos);
-            
+        // --- MODO TORNEIO ---
+        case 'PREPARAR_TORNEIO':
             clearInterval(timerInterval);
+            document.getElementById('nome-robo1').innerText = acao.robo1;
+            document.getElementById('nome-robo2').innerText = acao.robo2;
+            document.getElementById('bexigas-robo1').innerText = "0";
+            document.getElementById('bexigas-robo2').innerText = "0";
+            document.getElementById('vencedor-torneio').innerText = ""; // Prepara área do vencedor
+            
+            // Pega o tempo do arquivo JSON
+            tempoAtualSegundos = configuracoesApp.tempoTorneio;
+            document.getElementById('cronometro-torneio').innerText = formatarTempo(tempoAtualSegundos);
+            break;
+
+        case 'RETOMAR_TORNEIO':
+            clearInterval(timerInterval); // Garante que não duplique intervalos
             timerInterval = setInterval(() => {
                 if(tempoAtualSegundos > 0) {
                     tempoAtualSegundos--;
-                    cronometroTorneio.innerText = formatarTempo(tempoAtualSegundos);
+                    document.getElementById('cronometro-torneio').innerText = formatarTempo(tempoAtualSegundos);
                 } else {
                     clearInterval(timerInterval);
-                    vencedorTorneio.innerText = "Tempo Esgotado!";
+                    document.getElementById('vencedor-torneio').innerText = "Tempo Esgotado!";
                 }
             }, 1000);
             break;
 
+        case 'PAUSAR_TORNEIO':
+            clearInterval(timerInterval);
+            break;
+
         case 'PONTUAR_TORNEIO':
+            const bexigas1 = document.getElementById('bexigas-robo1');
+            const bexigas2 = document.getElementById('bexigas-robo2');
+            
             if(acao.robo === 1) bexigas1.innerText = acao.pontos;
             if(acao.robo === 2) bexigas2.innerText = acao.pontos;
             
+            // A Lógica do Botão "Desfazer" 
+            // Se as bexigas caírem pra menos de 2, ele apaga a faixa de "Vitória"
+            if (acao.pontos < 2 && (parseInt(bexigas1.innerText) < 2 && parseInt(bexigas2.innerText) < 2)) {
+                document.getElementById('vencedor-torneio').innerText = "";
+            }
+
+            // Condição de Vitória (Estourar 2 Bexigas)
             if(acao.pontos === 2) {
                 clearInterval(timerInterval);
-                const nomeVencedor = acao.robo === 1 ? robo1Nome.innerText : robo2Nome.innerText;
-                vencedorTorneio.innerText = `Vitória de ${nomeVencedor}!`;
+                const nomeVencedor = acao.robo === 1 ? document.getElementById('nome-robo1').innerText : document.getElementById('nome-robo2').innerText;
+                document.getElementById('vencedor-torneio').innerText = `Vitória de ${nomeVencedor}!`;
             }
+            break;
+            
+        case 'CANCELAR_TORNEIO':
+            clearInterval(timerInterval);
+            document.getElementById('nome-robo1').innerText = "Robô 1";
+            document.getElementById('nome-robo2').innerText = "Robô 2";
+            document.getElementById('bexigas-robo1').innerText = "0";
+            document.getElementById('bexigas-robo2').innerText = "0";
+            document.getElementById('cronometro-torneio').innerText = formatarTempo(configuracoesApp.tempoTorneio);
+            document.getElementById('vencedor-torneio').innerText = "Partida Cancelada";
             break;
 
         case 'INICIAR_FREESTYLE':
@@ -96,6 +123,11 @@ socket.on('atualiza_tela', (acao) => {
                 horario: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
             };
             
+            // --- NOVO: Envia para o servidor salvar no arquivo JSON ---
+            socket.emit('salvar_novo_registro', registro);
+
+
+
             rankingFreestyle.push(registro);
             rankingFreestyle.sort((a, b) => a.tempoSegundos - b.tempoSegundos);
             

@@ -4,56 +4,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar Robô Sumô - Telão</title>
+    <title>Placar Robô Sumô - Casa Aberta Senac</title>
+
+    <!-- Fontes do Google inspiradas na arte -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;700;900&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body class="tela-tv">
-    <header>
-        <h1 id="titulo-modo">Aguardando Início...</h1>
+    <div class="overlay-textura"></div>
+
+    <header class="cabecalho-senac">
+        <img src="logo-casa-aberta.png" alt="logo casa aberta senac">
+        <h2 id="titulo-modo" class="badge-modo">Aguardando Início...</h2>
     </header>
 
-    <main>
+    <main class="arena">
         <!-- MODO TORNEIO -->
-        <section id="modo-torneio" class="oculto">
-            <div class="placar-container">
-                <div class="competidor azul">
-                    <h2 id="nome-robo1">Robô 1</h2>
-                    <div class="bexigas" id="bexigas-robo1">0</div>
-                </div>
+        <section id="modo-torneio" class="oculto layout-torneio">
+            <div class="competidor card-azul">
+                <img src="personagem-robo1.png" alt="" class="personagem personagem-esquerda">
 
-                <div class="centro-placar">
-                    <h3>Tempo</h3>
-                    <div class="cronometro" id="cronometro-torneio">03:00</div>
-                    <div id="status-round">Round 1</div>
-                </div>
-
-                <div class="competidor vermelho">
-                    <h2 id="nome-robo2">Robô 2</h2>
-                    <div class="bexigas" id="bexigas-robo2">0</div>
-                </div>
+                <h2 id="nome-robo1">Robô 1</h2>
+                <div class="bexigas" id="bexigas-robo1">0</div>
             </div>
-            <h2 id="vencedor-torneio" class="mensagem-vencedor"></h2>
+
+            <div class="centro-placar">
+                <h3 class="label-tempo">TEMPO</h3>
+                <div class="cronometro" id="cronometro-torneio">03:00</div>
+                <h2 id="vencedor-torneio" class="mensagem-vencedor"></h2>
+            </div>
+
+            <div class="competidor card-vermelho">
+                <img src="personagem-robo2.png" alt="" class="personagem personagem-direita">
+
+                <h2 id="nome-robo2">Robô 2</h2>
+                <div class="bexigas" id="bexigas-robo2">0</div>
+            </div>
         </section>
 
-        <!-- MODO FREESTYLE -->
-        <section id="modo-freestyle" class="oculto">
+        <section id="modo-freestyle" class="oculto layout-freestyle">
 
-            <!-- Mostra o embate atual: Robo A vs Robo B -->
-            <div id="confronto-atual-tv" style="font-size: 2.5rem; margin-bottom: 1rem; font-weight: bold;"></div>
-            <div class="cronometro-container">
-                <h3>Cronômetro</h3>
-                <div class="cronometro" id="cronometro-freestyle">00:00</div>
+            <div class="titulo-freestyle">
+                <span class="seta seta-esquerda">»</span>
+                <span>MODO <strong>FREESTYLE</strong></span>
+                <span class="seta seta-direita">«</span>
+            </div>
+
+            <div class="placar-freestyle">
+
+                <div class="competidor-freestyle freestyle-azul">
+                    <img src="personagem-robo1.png" alt="" class="personagem-freestyle personagem-freestyle-esquerda">
+
+                    <div class="nome-freestyle" id="nome-freestyle1">
+                        Robô 1
+                    </div>
+
+                    <div class="pontos-freestyle" id="pontos-freestyle1">
+                        125
+                    </div>
+                </div>
+
+                <div class="tempo-freestyle">
+                    <div class="label-tempo-freestyle">
+                        <span>»</span>
+                        TEMPO
+                        <span>«</span>
+                    </div>
+
+                    <div class="cronometro cronometro-grande" id="cronometro-freestyle">
+                        00:25
+                    </div>
+
+                    <div class="linha-tempo"></div>
+                </div>
+
+                <div class="competidor-freestyle freestyle-vermelho">
+                    <img src="personagem-robo2.png" alt="" class="personagem-freestyle personagem-freestyle-direita">
+
+                    <div class="nome-freestyle" id="nome-freestyle2">
+                        Robô 2
+                    </div>
+
+                    <div class="pontos-freestyle" id="pontos-freestyle2">
+                        98
+                    </div>
+                </div>
+
             </div>
 
             <div class="historico">
-                <h3>Ranking Freestyle (Menor Tempo)</h3>
-                <ul id="lista-freestyle">
-                    <!-- Registros inseridos via JS -->
-                </ul>
+                <h3 class="titulo-ranking">
+                    RANKING FREESTYLE
+                </h3>
+
+                <ul id="lista-freestyle"></ul>
             </div>
+
+            <div class="mensagem-freestyle">
+                <span class="icone-mensagem">✦</span>
+                AQUI A <strong>CRIATIVIDADE</strong> GANHA PONTOS!
+                <span class="icone-mensagem">✦</span>
+            </div>
+
         </section>
+
+
+
+
+
+
     </main>
 
     <script src="tela.js"></script>

@@ -1,107 +1,1982 @@
 :root {
-    --bg-escuro: #121212;
-    --texto-claro: #f0f0f0;
-    --azul: #005f73;
-    --vermelho: #ae2012;
-    --verde: #2a9d8f;
-    --alerta: #e9c46a;
+    /* =========================================
+       PALETA CASA ABERTA SENAC
+    ========================================= */
+
+    --preto: #111111;
+    --preto-suave: #191919;
+
+    --branco: #f4f4f1;
+    --branco-puro: #ffffff;
+
+    --azul: #056477;
+    --azul-claro: #5c93c4;
+
+    --vermelho: #c51f16;
+
+    --amarelo: #f2b900;
+
+
+    /* =========================================
+       FONTES
+    ========================================= */
+
+    --fonte-impacto: 'Anton', sans-serif;
+    --fonte-texto: 'Montserrat', sans-serif;
+
+
+    /* =========================================
+       DIMENSÕES
+    ========================================= */
+
+    --largura-arena: 1500px;
 }
+
+
+/* =========================================
+   RESET
+========================================= */
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+/* =========================================
+   BODY - TELA DA TV
+========================================= */
 
 body.tela-tv {
-    background-color: var(--bg-escuro);
-    color: var(--texto-claro);
-    text-align: center;
-    padding: 2rem;
+    position: relative;
+
+    width: 100%;
+    min-height: 100vh;
+
+    overflow: hidden;
+
+    background-color: var(--branco);
+
+    background-image:
+        linear-gradient(
+            rgba(245, 245, 242, .90),
+            rgba(245, 245, 242, .90)
+        ),
+        url('fundo-senac.jpg');
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    color: var(--preto);
+
+    font-family: var(--fonte-texto);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-body.tela-controle {
-    background-color: #f4f4f9;
-    color: #333;
-    padding: 1rem;
+
+/* =========================================
+   TEXTURA SOBRE O FUNDO
+========================================= */
+
+.overlay-textura {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    background-image:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(0, 0, 0, .035) 0 2px,
+            transparent 3px
+        ),
+        radial-gradient(
+            circle at 75% 65%,
+            rgba(0, 0, 0, .03) 0 2px,
+            transparent 3px
+        );
+
+    background-size: 28px 28px;
+
+    opacity: .7;
 }
+
+
+/* =========================================
+   CABEÇALHO
+========================================= */
+
+.cabecalho-senac {
+    position: relative;
+
+    z-index: 20;
+
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    padding-top: 1.2rem;
+
+    gap: 0;
+
+    transition:
+        padding .4s ease,
+        gap .4s ease,
+        transform .4s ease;
+}
+
+
+/* =========================================
+   LOGO - TELA INICIAL
+========================================= */
+
+.cabecalho-senac > img {
+    display: block;
+
+    width: min(650px, 52vw);
+
+    max-height: 480px;
+
+    height: auto;
+
+    object-fit: contain;
+
+    opacity: .98;
+
+    transition:
+        width .4s ease,
+        max-height .4s ease,
+        opacity .4s ease;
+}
+
+
+/* =========================================
+   LOGO - PARTIDA ATIVA
+========================================= */
+
+body:has(#modo-torneio:not(.oculto)) .cabecalho-senac > img,
+body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac > img {
+    width: 125px;
+
+    max-height: 80px;
+
+    opacity: .9;
+}
+
+
+/* =========================================
+   MODO
+========================================= */
+
+.badge-modo {
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-top: .7rem;
+
+    padding: .2rem 1rem;
+
+    background: transparent;
+
+    border: none;
+    border-radius: 0;
+
+    color: var(--preto);
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(1.2rem, 2vw, 1.7rem);
+
+    line-height: 1;
+
+    letter-spacing: 1.5px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+    transition: all .4s ease;
+}
+
+
+.badge-modo::before {
+    content: "»";
+
+    margin-right: .55rem;
+
+    color: var(--vermelho);
+
+    font-family: var(--fonte-texto);
+
+    font-size: 1.2em;
+
+    font-weight: 900;
+}
+
+
+.badge-modo::after {
+    content: "«";
+
+    margin-left: .55rem;
+
+    color: var(--azul);
+
+    font-family: var(--fonte-texto);
+
+    font-size: 1.2em;
+
+    font-weight: 900;
+}
+
+
+/* =========================================
+   ESTADO INICIAL
+========================================= */
+
+body:not(:has(section:not(.oculto))) {
+    justify-content: center;
+}
+
+
+body:not(:has(section:not(.oculto))) .cabecalho-senac {
+    flex: 1;
+
+    justify-content: center;
+
+    gap: 5rem;
+
+    padding-top: 0;
+}
+
+
+body:not(:has(section:not(.oculto))) .badge-modo {
+    margin-top: 0;
+}
+
+
+/* =========================================
+   ARENA PRINCIPAL
+========================================= */
+
+.arena {
+    position: relative;
+
+    z-index: 5;
+
+    width: 94%;
+
+    max-width: var(--largura-arena);
+
+    margin-top: 1rem;
+}
+
 
 .oculto {
     display: none !important;
 }
 
-/* TV: Estrutura do Placar */
-.placar-container {
-    display: flex;
-    justify-content: space-between;
+
+/* =========================================================
+   =========================================================
+   MODO TORNEIO
+   =========================================================
+========================================================= */
+
+.layout-torneio {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(320px, 1fr)
+        minmax(280px, 360px)
+        minmax(320px, 1fr);
+
     align-items: center;
-    margin-top: 3rem;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
+
+    width: 100%;
+
+    gap: 0;
+
+    padding: 2.8rem 0 2rem;
 }
+
+
+/* =========================================
+   CARDS DOS COMPETIDORES
+========================================= */
 
 .competidor {
-    flex: 1;
+    position: relative;
+
+    min-height: 470px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 3rem 2rem;
+
+    color: white;
+
+    border-radius: 18px;
+
+    overflow: visible;
+
+    box-shadow:
+        8px 12px 0 rgba(0, 0, 0, .11),
+        0 20px 35px rgba(0, 0, 0, .15);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+
+    isolation: isolate;
+}
+
+
+/* =========================================
+   PAINEL AZUL
+========================================= */
+
+.card-azul {
+    background:
+        linear-gradient(
+            145deg,
+            #087487 0%,
+            #056477 100%
+        );
+
+    transform: rotate(-2deg);
+}
+
+
+/* =========================================
+   PAINEL VERMELHO
+========================================= */
+
+.card-vermelho {
+    background:
+        linear-gradient(
+            145deg,
+            #d7281e 0%,
+            #b91d14 100%
+        );
+
+    transform: rotate(2deg);
+}
+
+
+/* =========================================
+   TEXTURA INTERNA
+========================================= */
+
+.competidor::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: -1;
+
+    border-radius: inherit;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255, 255, 255, .15) 2px,
+            transparent 3px
+        );
+
+    background-size: 19px 19px;
+
+    opacity: .28;
+
+    pointer-events: none;
+}
+
+
+/* =========================================
+   DECORAÇÃO
+========================================= */
+
+.competidor::before {
+    content: "///";
+
+    position: absolute;
+
+    right: 28px;
+    bottom: 22px;
+
+    color: rgba(0, 0, 0, .75);
+
+    font-family: var(--fonte-impacto);
+
+    font-size: 2rem;
+
+    letter-spacing: -4px;
+
+    transform: rotate(-8deg);
+
+    pointer-events: none;
+}
+
+
+/* =========================================
+   NOME DO ROBÔ
+========================================= */
+
+.competidor h2 {
+    position: relative;
+
+    z-index: 4;
+
+    width: 78%;
+
+    padding: .75rem 1rem;
+
+    background: var(--preto);
+
+    color: white;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(2rem, 3vw, 3rem);
+
+    line-height: 1;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+    box-shadow:
+        7px 7px 0 rgba(0, 0, 0, .20);
+}
+
+
+/* =========================================
+   PLACAR DOS ROBÔS
+========================================= */
+
+.bexigas {
+    position: relative;
+
+    z-index: 3;
+
+    margin-top: 2rem;
+
+    color: white;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(8rem, 12vw, 12rem);
+
+    line-height: .85;
+
+    text-shadow:
+        5px 6px 0 rgba(0, 0, 0, .12);
+}
+
+
+/* =========================================
+   PERSONAGENS
+========================================= */
+
+.personagem {
+    position: absolute;
+
+    z-index: 10;
+
+    width: 230px;
+    height: 230px;
+
+    object-fit: contain;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(5px 7px 0 rgba(0, 0, 0, .14))
+        drop-shadow(0 10px 12px rgba(0, 0, 0, .12));
+}
+
+
+.personagem-esquerda {
+    top: -105px;
+    left: -45px;
+
+    transform: rotate(-4deg);
+}
+
+
+.personagem-direita {
+    top: -105px;
+    right: -45px;
+
+    transform: rotate(4deg);
+}
+
+
+/* =========================================
+   CENTRO DO PLACAR
+========================================= */
+
+.centro-placar {
+    position: relative;
+
+    z-index: 8;
+
+    min-height: 390px;
+
+    margin: 0 -25px;
+
+    padding: 2rem 1.5rem;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #181818,
+            #090909
+        );
+
+    border-radius: 18px;
+
+    box-shadow:
+        8px 10px 0 rgba(0, 0, 0, .16),
+        0 20px 35px rgba(0, 0, 0, .22);
+
+    transform: rotate(-1deg);
+}
+
+
+.centro-placar::before {
+    content: "";
+
+    position: absolute;
+
+    top: 28px;
+
+    left: 42px;
+    right: 42px;
+
+    height: 4px;
+
+    background: var(--amarelo);
+}
+
+
+.centro-placar::after {
+    content: "»    «";
+
+    position: absolute;
+
+    bottom: 20px;
+
+    color: var(--amarelo);
+
+    font-family: var(--fonte-texto);
+
+    font-size: 1.3rem;
+
+    font-weight: 900;
+
+    letter-spacing: 16px;
+}
+
+
+/* =========================================
+   LABEL TEMPO
+========================================= */
+
+.label-tempo {
+    margin-bottom: .9rem;
+
+    color: var(--amarelo);
+
+    font-family: var(--fonte-texto);
+
+    font-size: 1.15rem;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================
+   CRONÔMETRO TORNEIO
+========================================= */
+
+.cronometro {
+    color: white;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(5rem, 7vw, 7rem);
+
+    line-height: .9;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        4px 5px 0 rgba(0, 0, 0, .25);
+}
+
+
+/* =========================================
+   VENCEDOR
+========================================= */
+
+.mensagem-vencedor {
+    position: absolute;
+
+    bottom: 52px;
+
+    margin: 0;
+
+    color: white;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: 1.6rem;
+
+    line-height: 1;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   =========================================================
+   MODO FREESTYLE
+   =========================================================
+========================================================= */
+
+.layout-freestyle {
+    position: relative;
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    grid-template-rows:
+        auto
+        auto
+        auto
+        auto;
+
+    gap: 1.2rem;
+
+    padding: .8rem 0 1.5rem;
+}
+
+
+/* =========================================================
+   TÍTULO DO FREESTYLE
+========================================================= */
+
+.titulo-freestyle {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .8rem;
+
+    margin-bottom: .2rem;
+
+    color: var(--preto);
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(2.5rem, 4vw, 4.8rem);
+
+    line-height: .9;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+}
+
+
+.titulo-freestyle strong {
+    color: var(--vermelho);
+
+    font-weight: inherit;
+}
+
+
+.titulo-freestyle .seta {
+    font-family: var(--fonte-texto);
+
+    font-size: .8em;
+
+    font-weight: 900;
+}
+
+
+.titulo-freestyle .seta-esquerda {
+    color: var(--vermelho);
+}
+
+
+.titulo-freestyle .seta-direita {
+    color: var(--azul);
+}
+
+
+/* =========================================================
+   PLACAR PRINCIPAL
+========================================================= */
+
+.placar-freestyle {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(280px, 1fr)
+        minmax(280px, 360px)
+        minmax(280px, 1fr);
+
+    align-items: center;
+
+    gap: 0;
+}
+
+
+/* =========================================================
+   COMPETIDORES FREESTYLE
+========================================================= */
+
+.competidor-freestyle {
+    position: relative;
+
+    min-height: 300px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
     padding: 2rem;
-    border-radius: 10px;
+
+    overflow: visible;
+
+    border-radius: 14px;
+
+    color: white;
+
+    box-shadow:
+        7px 9px 0 rgba(0, 0, 0, .12);
+
+    z-index: 2;
 }
 
-.competidor.azul { background-color: var(--azul); }
-.competidor.vermelho { background-color: var(--vermelho); }
 
-.competidor h2 { font-size: 3rem; }
-.bexigas { font-size: 8rem; font-weight: bold; margin-top: 1rem; }
+/* =========================================
+   AZUL
+========================================= */
 
-.centro-placar { flex: 1; }
-.cronometro { font-size: 6rem; font-family: monospace; font-weight: bold; color: var(--alerta); }
-.mensagem-vencedor { margin-top: 2rem; font-size: 3rem; color: var(--verde); }
+.freestyle-azul {
+    background:
+        linear-gradient(
+            145deg,
+            #087487,
+            #056477
+        );
 
-/* TV: Freestyle Ranking */
-.historico { margin-top: 2rem; text-align: left; max-width: 800px; margin-inline: auto; }
-.historico ul { list-style: none; }
-.historico li { 
-    background: #222; 
-    padding: 1rem 2rem; 
-    margin-bottom: 0.5rem; 
-    border-radius: 8px; 
-    font-size: 1.5rem; 
-    display: flex; 
+    transform: rotate(-1.5deg);
+}
+
+
+/* =========================================
+   VERMELHO
+========================================= */
+
+.freestyle-vermelho {
+    background:
+        linear-gradient(
+            145deg,
+            #d7281e,
+            #b91d14
+        );
+
+    transform: rotate(1.5deg);
+}
+
+
+/* =========================================
+   TEXTURA
+========================================= */
+
+.competidor-freestyle::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: inherit;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255, 255, 255, .15) 2px,
+            transparent 3px
+        );
+
+    background-size: 18px 18px;
+
+    opacity: .25;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   PERSONAGENS FREESTYLE
+========================================================= */
+
+.personagem-freestyle {
+    position: absolute;
+
+    z-index: 10;
+
+    width: 190px;
+    height: 190px;
+
+    object-fit: contain;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(5px 6px 0 rgba(0, 0, 0, .14))
+        drop-shadow(0 7px 10px rgba(0, 0, 0, .12));
+}
+
+
+.personagem-freestyle-esquerda {
+    top: -80px;
+    left: -25px;
+
+    transform: rotate(-3deg);
+}
+
+
+.personagem-freestyle-direita {
+    top: -80px;
+    right: -25px;
+
+    transform: rotate(3deg);
+}
+
+
+/* =========================================================
+   NOME DOS ROBÔS FREESTYLE
+========================================================= */
+
+.nome-freestyle {
+    position: relative;
+
+    z-index: 5;
+
+    width: 82%;
+
+    min-height: 54px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: .7rem 1rem;
+
+    background: var(--preto);
+
+    color: white;
+
+    border-radius: 3px;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(1.8rem, 2.5vw, 2.8rem);
+
+    line-height: 1;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   PONTUAÇÃO FREESTYLE
+========================================================= */
+
+.pontos-freestyle {
+    position: relative;
+
+    z-index: 5;
+
+    margin-top: 1rem;
+
+    color: white;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(6rem, 10vw, 10rem);
+
+    line-height: .8;
+
+    letter-spacing: 1px;
+
+    text-shadow:
+        4px 5px 0 rgba(0, 0, 0, .12);
+}
+
+
+/* =========================================================
+   CRONÔMETRO CENTRAL FREESTYLE
+========================================================= */
+
+.tempo-freestyle {
+    position: relative;
+
+    z-index: 5;
+
+    min-height: 300px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 2rem 1.2rem;
+
+    background:
+        linear-gradient(
+            145deg,
+            #181818,
+            #090909
+        );
+
+    color: white;
+
+    border-radius: 14px;
+
+    box-shadow:
+        7px 9px 0 rgba(0, 0, 0, .14);
+}
+
+
+/* =========================================================
+   LABEL TEMPO FREESTYLE
+========================================================= */
+
+.label-tempo-freestyle {
+    display: flex;
+
+    align-items: center;
+
+    gap: .6rem;
+
+    margin-bottom: 1rem;
+
+    color: var(--amarelo);
+
+    font-family: var(--fonte-texto);
+
+    font-size: 1.05rem;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+}
+
+
+.label-tempo-freestyle span {
+    font-size: 1.3em;
+}
+
+
+/* =========================================================
+   CRONÔMETRO FREESTYLE
+========================================================= */
+
+.tempo-freestyle .cronometro-grande {
+    width: 100%;
+
+    padding: 0;
+
+    background: transparent;
+
+    border: none;
+
+    color: white;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(5rem, 7vw, 7.5rem);
+
+    line-height: .85;
+
+    letter-spacing: 2px;
+
+    text-align: center;
+
+    box-shadow: none;
+
+    text-shadow:
+        4px 5px 0 rgba(0, 0, 0, .22);
+}
+
+
+/* =========================================================
+   LINHA AMARELA DO TEMPO
+========================================================= */
+
+.linha-tempo {
+    width: 78%;
+
+    height: 4px;
+
+    margin-top: 1.3rem;
+
+    background: var(--amarelo);
+}
+
+
+/* =========================================================
+   RANKING FREESTYLE
+========================================================= */
+
+.historico {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+
+    background: transparent;
+
+    border: none;
+
+    box-shadow: none;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   TÍTULO DO RANKING
+========================================================= */
+
+.titulo-ranking {
+    width: 100%;
+
+    margin: 0;
+
+    padding: .7rem 1rem;
+
+    background: var(--preto);
+
+    color: var(--amarelo);
+
+    border-radius: 8px 8px 0 0;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(1.6rem, 2.3vw, 2.5rem);
+
+    line-height: 1;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   LISTA DO RANKING
+========================================================= */
+
+.historico ul {
+    width: 100%;
+
+    padding: .45rem;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .45rem;
+
+    list-style: none;
+
+    background: rgba(255, 255, 255, .92);
+
+    border: 3px solid var(--preto);
+
+    border-top: none;
+
+    border-radius: 0 0 8px 8px;
+}
+
+
+/* =========================================================
+   ITENS DO RANKING
+========================================================= */
+
+.historico li {
+    position: relative;
+
+    width: 100%;
+
+    min-height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
     justify-content: space-between;
+
+    gap: 1rem;
+
+    margin: 0;
+
+    padding: .65rem 1rem;
+
+    background: var(--branco-puro);
+
+    color: var(--preto);
+
+    border: 1px solid #d7d7d7;
+
+    border-left: 6px solid var(--azul);
+
+    border-radius: 4px;
+
+    box-shadow: none;
+
+    font-family: var(--fonte-texto);
+
+    font-size: 1rem;
+
+    font-weight: 900;
+
+    line-height: 1.1;
+
+    transform: none;
 }
 
-/* Controle: UI */
+
+/* =========================================================
+   CORES DO RANKING
+========================================================= */
+
+.historico li:first-child {
+    border-left-color: var(--amarelo);
+
+    background: #fffdf0;
+
+    color: var(--preto);
+}
+
+
+.historico li:nth-child(2) {
+    border-left-color: var(--vermelho);
+}
+
+
+.historico li:nth-child(3) {
+    border-left-color: var(--azul);
+}
+
+
+.historico li:nth-child(n + 4) {
+    border-left-color: #999999;
+}
+
+
+/* =========================================================
+   CONTEÚDO DOS ITENS
+========================================================= */
+
+.historico li span {
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .7rem;
+
+    flex: 1;
+
+    overflow: hidden;
+}
+
+
+.historico li span:first-child {
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
+}
+
+
+.historico li b {
+    flex-shrink: 0;
+
+    min-width: 32px;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: 1.25rem;
+
+    line-height: 1;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   MENSAGEM INFERIOR
+========================================================= */
+
+.mensagem-freestyle {
+    width: fit-content;
+
+    max-width: 90%;
+
+    margin: 0 auto;
+
+    padding: .8rem 1.8rem;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .6rem;
+
+    background: var(--preto);
+
+    color: white;
+
+    border-radius: 8px;
+
+    font-family: var(--fonte-impacto);
+
+    font-size: clamp(1rem, 1.5vw, 1.4rem);
+
+    line-height: 1;
+
+    letter-spacing: .5px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+}
+
+
+.mensagem-freestyle strong {
+    color: var(--vermelho);
+}
+
+
+.icone-mensagem {
+    color: var(--amarelo);
+
+    font-family: var(--fonte-texto);
+
+    font-size: 1.3rem;
+}
+
+
+/* =========================================================
+   =========================================================
+   TELA DO CONTROLE / SMARTPHONE
+   =========================================================
+========================================================= */
+
+body.tela-controle {
+    min-height: 100vh;
+
+    background: #f4f4f1;
+
+    color: #333333;
+
+    padding: 1rem;
+
+    font-family: var(--fonte-texto);
+}
+
+
+/* =========================================
+   CARD DO CONTROLE
+========================================= */
+
 .card-controle {
     background: white;
+
     padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, .08);
+
     margin-bottom: 1.5rem;
 }
 
+
+/* =========================================
+   INPUT
+========================================= */
+
 input[type="text"] {
     width: 100%;
+
     padding: 1rem;
+
     margin-bottom: 1rem;
+
     font-size: 1.2rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+
+    border: 2px solid #dddddd;
+
+    border-radius: 6px;
+
+    outline: none;
 }
+
+
+input[type="text"]:focus {
+    border-color: var(--azul);
+}
+
+
+/* =========================================
+   BOTÕES
+========================================= */
 
 button {
     width: 100%;
+
     padding: 1rem;
-    margin-bottom: 0.5rem;
+
+    margin-bottom: .5rem;
+
     font-size: 1.2rem;
+
     font-weight: bold;
+
     border: none;
-    border-radius: 5px;
+
+    border-radius: 6px;
+
     cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        opacity .15s ease;
 }
 
-.btn-primario { background: #333; color: white; }
-.btn-sucesso { background: var(--verde); color: white; }
-.btn-alerta { background: var(--alerta); color: black; }
-.btn-azul { background: var(--azul); color: white; }
-.btn-vermelho { background: var(--vermelho); color: white; }
+
+button:hover {
+    opacity: .92;
+}
+
+
+button:active {
+    transform: translateY(2px);
+}
+
+
+/* =========================================
+   BOTÕES COLORIDOS
+========================================= */
+
+.btn-primario {
+    background: var(--preto);
+
+    color: white;
+}
+
+
+.btn-sucesso {
+    background: #2a9d8f;
+
+    color: white;
+}
+
+
+.btn-alerta {
+    background: var(--amarelo);
+
+    color: var(--preto);
+}
+
+
+.btn-azul {
+    background: var(--azul);
+
+    color: white;
+}
+
+
+.btn-vermelho {
+    background: var(--vermelho);
+
+    color: white;
+}
+
+
+/* =========================================================
+   =========================================================
+   RESPONSIVIDADE
+   =========================================================
+========================================================= */
+
+
+/* =========================================================
+   TELAS MÉDIAS
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    :root {
+        --largura-arena: 1100px;
+    }
+
+
+    /* =====================================
+       TORNEIO
+    ===================================== */
+
+    .layout-torneio {
+        grid-template-columns:
+            minmax(260px, 1fr)
+            minmax(240px, 300px)
+            minmax(260px, 1fr);
+    }
+
+
+    .competidor {
+        min-height: 420px;
+
+        padding: 2.5rem 1.5rem;
+    }
+
+
+    .personagem {
+        width: 190px;
+        height: 190px;
+    }
+
+
+    .personagem-esquerda {
+        top: -80px;
+        left: -30px;
+    }
+
+
+    .personagem-direita {
+        top: -80px;
+        right: -30px;
+    }
+
+
+    .centro-placar {
+        min-height: 360px;
+
+        margin: 0 -15px;
+    }
+
+
+    /* =====================================
+       FREESTYLE
+    ===================================== */
+
+    .placar-freestyle {
+        grid-template-columns:
+            minmax(240px, 1fr)
+            minmax(240px, 300px)
+            minmax(240px, 1fr);
+    }
+
+
+    .competidor-freestyle {
+        min-height: 270px;
+    }
+
+
+    .personagem-freestyle {
+        width: 165px;
+        height: 165px;
+    }
+
+
+    .personagem-freestyle-esquerda {
+        top: -65px;
+        left: -20px;
+    }
+
+
+    .personagem-freestyle-direita {
+        top: -65px;
+        right: -20px;
+    }
+
+
+    .nome-freestyle {
+        width: 85%;
+
+        font-size: 2rem;
+    }
+
+
+    .pontos-freestyle {
+        font-size: 7.5rem;
+    }
+
+
+    .tempo-freestyle {
+        min-height: 270px;
+    }
+
+
+    .tempo-freestyle .cronometro-grande {
+        font-size: 6rem;
+    }
+}
+
+
+/* =========================================================
+   TELAS PEQUENAS
+========================================================= */
+
+@media (max-width: 900px) {
+
+    body.tela-tv {
+        overflow-y: auto;
+    }
+
+
+    /* =====================================
+       TORNEIO
+    ===================================== */
+
+    .layout-torneio {
+        grid-template-columns: 1fr;
+
+        gap: 1.5rem;
+
+        padding-top: 2rem;
+    }
+
+
+    .competidor {
+        min-height: 300px;
+
+        transform: none;
+    }
+
+
+    .card-azul,
+    .card-vermelho {
+        transform: none;
+    }
+
+
+    .centro-placar {
+        order: -1;
+
+        min-height: 280px;
+
+        margin: 0;
+
+        transform: none;
+    }
+
+
+    .personagem {
+        width: 170px;
+        height: 170px;
+    }
+
+
+    .personagem-esquerda {
+        top: -70px;
+        left: -20px;
+    }
+
+
+    .personagem-direita {
+        top: -70px;
+        right: -20px;
+    }
+
+
+    /* =====================================
+       FREESTYLE
+    ===================================== */
+
+    .placar-freestyle {
+        grid-template-columns: 1fr;
+
+        gap: 1rem;
+    }
+
+
+    .competidor-freestyle {
+        min-height: 260px;
+
+        transform: none;
+    }
+
+
+    .freestyle-azul,
+    .freestyle-vermelho {
+        transform: none;
+    }
+
+
+    .tempo-freestyle {
+        min-height: 240px;
+
+        order: -1;
+    }
+
+
+    .personagem-freestyle {
+        width: 160px;
+        height: 160px;
+    }
+
+
+    .personagem-freestyle-esquerda {
+        top: -65px;
+        left: -15px;
+    }
+
+
+    .personagem-freestyle-direita {
+        top: -65px;
+        right: -15px;
+    }
+
+
+    .titulo-freestyle {
+        font-size: 3rem;
+    }
+
+
+    .historico {
+        margin-top: .5rem;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    /* =====================================
+       CABEÇALHO
+    ===================================== */
+
+    .cabecalho-senac {
+        padding-top: .6rem;
+    }
+
+
+    .cabecalho-senac > img {
+        width: 260px;
+    }
+
+
+    body:has(#modo-torneio:not(.oculto)) .cabecalho-senac > img,
+    body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac > img {
+        width: 90px;
+    }
+
+
+    .badge-modo {
+        font-size: 1.05rem;
+    }
+
+
+    .arena {
+        width: 92%;
+    }
+
+
+    /* =====================================
+       TORNEIO
+    ===================================== */
+
+    .competidor h2 {
+        width: 85%;
+
+        font-size: 2rem;
+    }
+
+
+    .bexigas {
+        font-size: 7rem;
+    }
+
+
+    .personagem {
+        width: 140px;
+        height: 140px;
+    }
+
+
+    .personagem-esquerda {
+        top: -55px;
+        left: -15px;
+    }
+
+
+    .personagem-direita {
+        top: -55px;
+        right: -15px;
+    }
+
+
+    .cronometro {
+        font-size: 5rem;
+    }
+
+
+    /* =====================================
+       FREESTYLE
+    ===================================== */
+
+    .titulo-freestyle {
+        gap: .35rem;
+
+        font-size: 2.3rem;
+    }
+
+
+    .titulo-freestyle .seta {
+        font-size: 1.8rem;
+    }
+
+
+    .competidor-freestyle {
+        min-height: 220px;
+
+        padding: 1.5rem 1rem;
+    }
+
+
+    .personagem-freestyle {
+        width: 130px;
+        height: 130px;
+    }
+
+
+    .personagem-freestyle-esquerda {
+        top: -50px;
+        left: -10px;
+    }
+
+
+    .personagem-freestyle-direita {
+        top: -50px;
+        right: -10px;
+    }
+
+
+    .nome-freestyle {
+        width: 88%;
+
+        min-height: 48px;
+
+        padding: .6rem .8rem;
+
+        font-size: 1.7rem;
+    }
+
+
+    .pontos-freestyle {
+        margin-top: .8rem;
+
+        font-size: 6rem;
+    }
+
+
+    .tempo-freestyle {
+        min-height: 190px;
+
+        padding: 1rem;
+    }
+
+
+    .label-tempo-freestyle {
+        font-size: .8rem;
+
+        margin-bottom: .6rem;
+    }
+
+
+    .tempo-freestyle .cronometro-grande {
+        font-size: 5rem;
+    }
+
+
+    .linha-tempo {
+        width: 75%;
+
+        height: 3px;
+
+        margin-top: .8rem;
+    }
+
+
+    /* =====================================
+       RANKING
+    ===================================== */
+
+    .historico ul {
+        padding: .35rem;
+
+        gap: .35rem;
+    }
+
+
+    .titulo-ranking {
+        padding: .7rem .8rem;
+
+        font-size: 1.8rem;
+    }
+
+
+    .historico li {
+        min-height: 52px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        justify-content: center;
+
+        gap: .4rem;
+
+        padding: .8rem;
+
+        font-size: .95rem;
+    }
+
+
+    .historico li b {
+        min-width: 28px;
+
+        font-size: 1.1rem;
+    }
+
+
+    /* =====================================
+       MENSAGEM
+    ===================================== */
+
+    .mensagem-freestyle {
+        max-width: 100%;
+
+        padding: .7rem 1rem;
+
+        font-size: .9rem;
+    }
+
+
+    /* =====================================
+       TELA INICIAL
+    ===================================== */
+
+    body:not(:has(section:not(.oculto))) .cabecalho-senac {
+        gap: 3rem;
+    }
+
+
+    body:not(:has(section:not(.oculto))) .badge-modo {
+        padding: 1rem 2rem;
+    }
+}
