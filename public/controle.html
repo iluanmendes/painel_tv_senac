@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,9 @@
     <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
 </head>
+
 <body class="tela-controle">
-    
+
     <!-- TELA DE BLOQUEIO -->
     <div id="tela-bloqueio" style="text-align: center; margin-top: 20vh;">
         <h2>Aguardando Autenticação...</h2>
@@ -16,7 +18,7 @@
 
     <!-- PAINEL DE CONTROLE -->
     <div id="conteudo-controle" class="oculto">
-        
+
         <div class="card-controle">
             <label>Menu:</label>
             <div class="botoes-modo" style="display: flex; gap: 5px;">
@@ -31,7 +33,8 @@
             <h3>Configurações do Campeonato</h3>
             <br>
             <label>Tempo do Torneio (em segundos):</label>
-            <input type="number" id="input-tempo-torneio" placeholder="Ex: 180" style="width: 100%; padding: 1rem; margin-bottom: 1rem; font-size: 1.2rem; border: 2px solid #ddd; border-radius: 6px;">
+            <input type="number" id="input-tempo-torneio" placeholder="Ex: 180"
+                style="width: 100%; padding: 1rem; margin-bottom: 1rem; font-size: 1.2rem; border: 2px solid #ddd; border-radius: 6px;">
             <button id="btn-salvar-config" class="btn-sucesso">Salvar Configurações</button>
         </div>
 
@@ -40,7 +43,7 @@
             <h3>Modo Torneio</h3>
             <input type="text" id="input-robo1" placeholder="Nome do Robô Azul">
             <input type="text" id="input-robo2" placeholder="Nome do Robô Vermelho">
-            
+
             <div id="acoes-preparo-torneio" class="acoes">
                 <button id="btn-preparar-torneio" class="btn-sucesso">Preparar Partida</button>
             </div>
@@ -51,18 +54,30 @@
                     <button id="btn-pausar-tempo-torneio" class="btn-alerta oculto">⏸️ Pausar</button>
                 </div>
 
-                <div class="acoes-pontuacao" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <button id="btn-ponto-robo1" class="btn-azul">💥 Ponto Azul</button>
-                        <button id="btn-desfazer-robo1" class="btn-primario">↩ Desfazer</button>
-                    </div>
-                    <div>
-                        <button id="btn-ponto-robo2" class="btn-vermelho">💥 Ponto Vermelho</button>
-                        <button id="btn-desfazer-robo2" class="btn-primario">↩ Desfazer</button>
-                    </div>
+                <div class="acoes-pontuacao" style="
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    ">
+
+                    <button id="btn-ponto-robo1" class="btn-azul">
+                        💥 Ponto Azul
+                    </button>
+
+
+                    <button id="btn-ponto-robo2" class="btn-vermelho">
+                        💥 Ponto Vermelho
+                    </button>
+
                 </div>
 
-                <button id="btn-cancelar-torneio" class="btn-primario" style="margin-top: 1rem;">Cancelar Partida</button>
+
+                <button id="btn-desfazer-ultima-acao" class="btn-alerta">
+                    ↩ Desfazer última ação
+                </button>
+
+                <button id="btn-cancelar-torneio" class="btn-primario" style="margin-top: 1rem;">Cancelar
+                    Partida</button>
             </div>
         </div>
 
@@ -71,19 +86,37 @@
             <h3>Modo Freestyle (Morte Súbita)</h3>
             <input type="text" id="input-free-robo1" placeholder="Nome do Robô Azul">
             <input type="text" id="input-free-robo2" placeholder="Nome do Robô Vermelho">
-            
+
             <div class="acoes">
                 <button id="btn-iniciar-freestyle" class="btn-sucesso">Iniciar Relógio</button>
             </div>
 
             <div id="acoes-vencedor-freestyle" class="acoes-pontuacao oculto">
-                <button id="btn-venceu-robo1" class="btn-azul">Vitória Azul</button>
-                <button id="btn-venceu-robo2" class="btn-vermelho">Vitória Vermelho</button>
-                <button id="btn-cancelar-freestyle" class="btn-primario" style="margin-top: 10px; width: 100%;">Cancelar Partida</button>
+
+                <button id="btn-venceu-robo1" class="btn-azul">
+                    Vitória Azul
+                </button>
+
+
+                <button id="btn-venceu-robo2" class="btn-vermelho">
+                    Vitória Vermelho
+                </button>
+
+
+                <button id="btn-desfazer-ultima-acao-freestyle" class="btn-alerta">
+                    ↩ Desfazer última ação
+                </button>
+
+
+                <button id="btn-cancelar-freestyle" class="btn-primario" style="margin-top: 10px; width: 100%;">
+                    Cancelar Partida
+                </button>
+
             </div>
         </div>
 
     </div>
     <script src="controle.js"></script>
 </body>
+
 </html>
