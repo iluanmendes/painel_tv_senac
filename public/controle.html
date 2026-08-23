@@ -38,82 +38,173 @@
             <button id="btn-salvar-config" class="btn-sucesso">Salvar Configurações</button>
         </div>
 
-        <!-- CONTROLES TORNEIO -->
+        <!-- =====================================================
+     CONTROLES TORNEIO
+===================================================== -->
+
         <div id="controles-torneio" class="card-controle oculto">
+
             <h3>Modo Torneio</h3>
+
             <input type="text" id="input-robo1" placeholder="Nome do Robô Azul">
+
             <input type="text" id="input-robo2" placeholder="Nome do Robô Vermelho">
 
+
+            <!-- ===============================
+         PREPARAÇÃO
+    ================================ -->
+
             <div id="acoes-preparo-torneio" class="acoes">
-                <button id="btn-preparar-torneio" class="btn-sucesso">Preparar Partida</button>
+
+                <button id="btn-preparar-torneio" class="btn-sucesso">
+                    Preparar Partida
+                </button>
+
             </div>
+
+
+            <!-- ===============================
+         PARTIDA
+    ================================ -->
 
             <div id="acoes-jogo-torneio" class="oculto">
-                <div style="display: flex; gap: 10px; margin-bottom: 1rem;">
-                    <button id="btn-iniciar-tempo-torneio" class="btn-sucesso">▶️ Iniciar Relógio</button>
-                    <button id="btn-pausar-tempo-torneio" class="btn-alerta oculto">⏸️ Pausar</button>
+
+                <!-- CONTROLE PRINCIPAL -->
+
+                <button id="btn-iniciar-tempo-torneio" class="btn-sucesso btn-iniciar-partida">
+                    ▶️ Iniciar Partida
+                </button>
+
+
+                <button id="btn-pausar-tempo-torneio" class="btn-alerta oculto">
+                    ⏸️ Pausar Partida
+                </button>
+
+
+                <!-- ===========================
+             PONTUAÇÃO
+        ============================ -->
+
+                <div class="acoes-pontuacao">
+
+                    <!-- AZUL -->
+
+                    <div class="grupo-pontuacao">
+
+                        <button id="btn-ponto-robo1" class="btn-azul">
+                            + Ponto Azul
+                        </button>
+
+                        <button id="btn-desfazer-robo1" class="btn-corrigir" title="Retirar último ponto do azul"
+                            aria-label="Retirar último ponto do azul">
+                            ↩ Corrigir
+                        </button>
+
+                    </div>
+
+
+                    <!-- VERMELHO -->
+
+                    <div class="grupo-pontuacao">
+
+                        <button id="btn-ponto-robo2" class="btn-vermelho">
+                            + Ponto Vermelho
+                        </button>
+
+                        <button id="btn-desfazer-robo2" class="btn-corrigir" title="Retirar último ponto do vermelho"
+                            aria-label="Retirar último ponto do vermelho">
+                            ↩ Corrigir
+                        </button>
+
+                    </div>
+
                 </div>
 
-                <div class="acoes-pontuacao" style="
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    ">
 
-                    <button id="btn-ponto-robo1" class="btn-azul">
-                        💥 Ponto Azul
-                    </button>
+                <!-- ===========================
+             CANCELAR
+        ============================ -->
 
-
-                    <button id="btn-ponto-robo2" class="btn-vermelho">
-                        💥 Ponto Vermelho
-                    </button>
-
-                </div>
-
-
-                <button id="btn-desfazer-ultima-acao" class="btn-alerta">
-                    ↩ Desfazer última ação
-                </button>
-
-                <button id="btn-cancelar-torneio" class="btn-primario" style="margin-top: 1rem;">Cancelar
-                    Partida</button>
-            </div>
-        </div>
-
-        <!-- CONTROLES FREESTYLE -->
-        <div id="controles-freestyle" class="card-controle oculto">
-            <h3>Modo Freestyle (Morte Súbita)</h3>
-            <input type="text" id="input-free-robo1" placeholder="Nome do Robô Azul">
-            <input type="text" id="input-free-robo2" placeholder="Nome do Robô Vermelho">
-
-            <div class="acoes">
-                <button id="btn-iniciar-freestyle" class="btn-sucesso">Iniciar Relógio</button>
-            </div>
-
-            <div id="acoes-vencedor-freestyle" class="acoes-pontuacao oculto">
-
-                <button id="btn-venceu-robo1" class="btn-azul">
-                    Vitória Azul
-                </button>
-
-
-                <button id="btn-venceu-robo2" class="btn-vermelho">
-                    Vitória Vermelho
-                </button>
-
-
-                <button id="btn-desfazer-ultima-acao-freestyle" class="btn-alerta">
-                    ↩ Desfazer última ação
-                </button>
-
-
-                <button id="btn-cancelar-freestyle" class="btn-primario" style="margin-top: 10px; width: 100%;">
+                <button id="btn-cancelar-torneio" class="btn-primario btn-cancelar">
                     Cancelar Partida
                 </button>
 
             </div>
+
         </div>
+
+
+        <!-- =====================================================
+     CONTROLES FREESTYLE
+===================================================== -->
+
+        <div id="controles-freestyle" class="card-controle oculto">
+
+            <h3>Modo Freestyle</h3>
+
+            <p class="descricao-controle">
+                Cada robô possui uma tentativa.
+            </p>
+
+
+            <!-- ===============================
+         PARTICIPANTES
+    ================================ -->
+
+            <input type="text" id="input-free-robo1" placeholder="Nome do Robô Azul">
+
+            <input type="text" id="input-free-robo2" placeholder="Nome do Robô Vermelho">
+
+
+            <!-- ===============================
+         PREPARAÇÃO
+    ================================ -->
+
+            <div id="acoes-preparo-freestyle" class="acoes">
+
+                <button id="btn-preparar-freestyle" class="btn-sucesso">
+                    Preparar Partida
+                </button>
+
+            </div>
+
+
+            <!-- ===============================
+         PARTIDA
+    ================================ -->
+
+            <div id="acoes-jogo-freestyle" class="oculto">
+
+                <button id="btn-iniciar-freestyle" class="btn-sucesso btn-iniciar-partida">
+                    ▶️ Iniciar Partida
+                </button>
+
+
+                <!-- VENCEDOR -->
+
+                <div id="acoes-vencedor-freestyle" class="acoes-pontuacao oculto">
+
+                    <button id="btn-venceu-robo1" class="btn-azul">
+                        🏆 Vitória Azul
+                    </button>
+
+
+                    <button id="btn-venceu-robo2" class="btn-vermelho">
+                        🏆 Vitória Vermelha
+                    </button>
+
+
+                    <button id="btn-cancelar-freestyle" class="btn-primario btn-cancelar">
+                        Cancelar Partida
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
 
     </div>
     <script src="controle.js"></script>

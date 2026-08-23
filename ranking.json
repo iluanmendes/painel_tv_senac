@@ -1,6 +1,6 @@
 {
   "configuracoes": {
-    "tempoTorneio": 180
+    "tempoTorneio": 190
   },
   "rankingFreestyle": [
     {
@@ -34,9 +34,30 @@
       "horario": "08:24"
     },
     {
+      "nome": "bv",
+      "robo1": "n",
+      "robo2": "bv",
+      "tempoSegundos": 1,
+      "horario": "12:18"
+    },
+    {
+      "nome": "bv",
+      "robo1": "n",
+      "robo2": "bv",
+      "tempoSegundos": 1,
+      "horario": "12:18"
+    },
+    {
       "nome": "c",
       "tempoSegundos": 2,
       "horario": "08:23"
+    },
+    {
+      "nome": "bb",
+      "robo1": "bb",
+      "robo2": "cc",
+      "tempoSegundos": 2,
+      "horario": "12:40"
     },
     {
       "nome": "ab",
@@ -47,6 +68,13 @@
       "nome": "Robô Vermelho",
       "tempoSegundos": 4,
       "horario": "03:01"
+    },
+    {
+      "nome": "abcde",
+      "robo1": "abcde",
+      "robo2": "fgh",
+      "tempoSegundos": 4,
+      "horario": "13:15"
     },
     {
       "nome": "Robota",
@@ -101,6 +129,13 @@
       "nome": "b",
       "tempoSegundos": 24,
       "horario": "02:48"
+    },
+    {
+      "nome": "AbBa",
+      "robo1": "AbBa",
+      "robo2": "BB",
+      "tempoSegundos": 29,
+      "horario": "12:04"
     },
     {
       "nome": "1",

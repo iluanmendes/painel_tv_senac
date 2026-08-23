@@ -152,8 +152,8 @@ function atualizarListaFreestyle() {
                 <span>
                     ⏱ ${tempo}
                     ${item.horario
-                        ? ` • ${item.horario}`
-                        : ''}
+                    ? ` • ${item.horario}`
+                    : ''}
                 </span>
             `;
 
@@ -407,27 +407,23 @@ function renderizarTorneio(
 // FREESTYLE
 // =========================================================
 
-function renderizarFreestyle(
-    estado
-) {
+function renderizarFreestyle(estado) {
 
-    const dados =
-        estado.freestyle;
+    const dados = estado.freestyle;
 
-
-    if (!dados) return;
+    if (!dados) {
+        return;
+    }
 
 
-    /*
-     * Compatibilidade com os IDs
-     * utilizados no HTML atual.
-     */
+    // =====================================================
+    // PARTICIPANTES
+    // =====================================================
 
     setTexto(
         'nome-free-robo1',
         dados.robo1
     );
-
 
     setTexto(
         'nome-free-robo2',
@@ -435,23 +431,9 @@ function renderizarFreestyle(
     );
 
 
-    /*
-     * Compatibilidade com o HTML
-     * que utilizava os IDs da versão
-     * anterior do layout.
-     */
-
-    setTexto(
-        'nome-freestyle1',
-        dados.robo1
-    );
-
-
-    setTexto(
-        'nome-freestyle2',
-        dados.robo2
-    );
-
+    // =====================================================
+    // CRONÔMETRO
+    // =====================================================
 
     setTexto(
         'cronometro-freestyle',
@@ -460,6 +442,10 @@ function renderizarFreestyle(
         )
     );
 
+
+    // =====================================================
+    // RESULTADO
+    // =====================================================
 
     if (
         estado.status ===
@@ -472,7 +458,6 @@ function renderizarFreestyle(
         );
 
         return;
-
     }
 
 
@@ -484,7 +469,6 @@ function renderizarFreestyle(
         );
 
         return;
-
     }
 
 

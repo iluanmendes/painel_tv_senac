@@ -83,30 +83,6 @@ socket.on(
     }
 );
 
-socket.on(
-    'acao_desfeita',
-    (dados) => {
-
-        if (
-            !dados ||
-            !dados.acao
-        ) {
-            return;
-        }
-
-
-        if (
-            estadoCompeticao &&
-            estadoCompeticao.modo ===
-            'freestyle'
-        ) {
-
-            restaurarInterfaceFreestyle();
-
-        }
-
-    }
-);
 
 
 // =========================================================
@@ -185,6 +161,56 @@ function sincronizarControle() {
                 .pontos2;
 
     }
+
+    if (partidaRodando) {
+
+    btnIniciarTempo
+        .classList
+        .add('oculto');
+
+    btnPausarTempo
+        .classList
+        .remove('oculto');
+
+} else {
+
+    btnPausarTempo
+        .classList
+        .add('oculto');
+
+    if (
+        estadoCompeticao.status !== 'cancelado' &&
+        estadoCompeticao.status !== 'finalizado' &&
+        dados.tempoRestante > 0
+    ) {
+
+        btnIniciarTempo
+            .classList
+            .remove('oculto');
+
+        if (
+            estadoCompeticao.status === 'pausado'
+        ) {
+
+            btnIniciarTempo.innerText =
+                '▶️ Retomar Partida';
+
+        } else {
+
+            btnIniciarTempo.innerText =
+                '▶️ Iniciar Partida';
+
+        }
+
+    } else {
+
+        btnIniciarTempo
+            .classList
+            .add('oculto');
+
+    }
+
+}
 
 }
 
@@ -382,31 +408,10 @@ const btnPausarTempo =
         'btn-pausar-tempo-torneio'
     );
 
-const btnDesfazerUltimaAcao =
-    document.getElementById(
-        'btn-desfazer-ultima-acao'
-    );
 
 
-// =========================================================
-// DESFAZER ÚLTIMA AÇÃO
-// =========================================================
 
-btnDesfazerUltimaAcao
-    .addEventListener(
-        'click',
-        () => {
 
-            socket.emit(
-                'comando_controle',
-                {
-                    tipo:
-                        'DESFAZER_ULTIMA_ACAO'
-                }
-            );
-
-        }
-    );
 
 // =========================================================
 // PREPARAR TORNEIO
@@ -644,7 +649,7 @@ document
     );
 
 
-// =========================================================
+    // =========================================================
 // FREESTYLE
 // =========================================================
 
@@ -657,6 +662,24 @@ const inputFreeRobo1 =
 const inputFreeRobo2 =
     document.getElementById(
         'input-free-robo2'
+    );
+
+
+const btnPrepararFree =
+    document.getElementById(
+        'btn-preparar-freestyle'
+    );
+
+
+const acoesPreparoFree =
+    document.getElementById(
+        'acoes-preparo-freestyle'
+    );
+
+
+const acoesJogoFree =
+    document.getElementById(
+        'acoes-jogo-freestyle'
     );
 
 
@@ -689,97 +712,16 @@ const btnCancelarFree =
         'btn-cancelar-freestyle'
     );
 
-const btnDesfazerUltimaAcaoFreestyle =
-    document.getElementById(
-        'btn-desfazer-ultima-acao-freestyle'
-    );
-
-
-btnDesfazerUltimaAcaoFreestyle
-    .addEventListener(
-        'click',
-        () => {
-
-            socket.emit(
-                'comando_controle',
-                {
-                    tipo:
-                        'DESFAZER_ULTIMA_ACAO'
-                }
-            );
-
-        }
-    );
-
-
-function restaurarInterfaceFreestyle() {
-
-    if (!estadoCompeticao) {
-        return;
-    }
-
-
-    const dados =
-        estadoCompeticao.freestyle;
-
-
-    if (!dados) {
-        return;
-    }
-
-
-    freeRobo1 =
-        dados.robo1;
-
-
-    freeRobo2 =
-        dados.robo2;
-
-
-    inputFreeRobo1.value =
-        dados.robo1;
-
-
-    inputFreeRobo2.value =
-        dados.robo2;
-
-
-    inputFreeRobo1.disabled =
-        true;
-
-
-    inputFreeRobo2.disabled =
-        true;
-
-
-    btnIniciarFree
-        .classList
-        .add('oculto');
-
-
-    acoesVencedorFree
-        .classList
-        .remove('oculto');
-
-
-    btnVenceuRobo1.innerText =
-        `💥 Vitória de ${freeRobo1}`;
-
-
-    btnVenceuRobo2.innerText =
-        `💥 Vitória de ${freeRobo2}`;
-
-}
 
 let freeRobo1 = '';
 let freeRobo2 = '';
 
 
 // =========================================================
-// INICIAR FREESTYLE
+// PREPARAR FREESTYLE
 // =========================================================
 
-btnIniciarFree
+btnPrepararFree
     .addEventListener(
         'click',
         () => {
@@ -805,20 +747,12 @@ btnIniciarFree
                 true;
 
 
-            btnIniciarFree
+            acoesPreparoFree
                 .classList
                 .add('oculto');
 
 
-            btnVenceuRobo1.innerText =
-                `💥 Vitória de ${freeRobo1}`;
-
-
-            btnVenceuRobo2.innerText =
-                `💥 Vitória de ${freeRobo2}`;
-
-
-            acoesVencedorFree
+            acoesJogoFree
                 .classList
                 .remove('oculto');
 
@@ -827,7 +761,7 @@ btnIniciarFree
                 'comando_controle',
                 {
                     tipo:
-                        'INICIAR_FREESTYLE',
+                        'PREPARAR_FREESTYLE',
 
                     robo1:
                         freeRobo1,
@@ -840,6 +774,37 @@ btnIniciarFree
         }
     );
 
+
+
+// =========================================================
+// INICIAR FREESTYLE
+// =========================================================
+
+btnIniciarFree
+    .addEventListener(
+        'click',
+        () => {
+
+            btnIniciarFree
+                .classList
+                .add('oculto');
+
+
+            acoesVencedorFree
+                .classList
+                .remove('oculto');
+
+
+            socket.emit(
+                'comando_controle',
+                {
+                    tipo:
+                        'INICIAR_FREESTYLE'
+                }
+            );
+
+        }
+    );
 
 // =========================================================
 // VENCEDOR FREESTYLE
@@ -869,6 +834,17 @@ function registrarVitoriaFreestyle(
     nomeVencedor
 ) {
 
+    if (
+        !estadoCompeticao ||
+        estadoCompeticao.status !==
+        'em_andamento'
+    ) {
+
+        return;
+
+    }
+
+
     socket.emit(
         'comando_controle',
         {
@@ -882,6 +858,10 @@ function registrarVitoriaFreestyle(
 
 }
 
+
+// =========================================================
+// CANCELAR FREESTYLE
+// =========================================================
 
 // =========================================================
 // CANCELAR FREESTYLE
@@ -901,11 +881,38 @@ btnCancelarFree
             );
 
 
-            resetarInterfaceFreestyle();
+            inputFreeRobo1.disabled =
+                false;
+
+            inputFreeRobo2.disabled =
+                false;
+
+
+            inputFreeRobo1.value = '';
+            inputFreeRobo2.value = '';
+
+
+            acoesJogoFree
+                .classList
+                .add('oculto');
+
+
+            acoesPreparoFree
+                .classList
+                .remove('oculto');
+
+
+            btnIniciarFree
+                .classList
+                .remove('oculto');
+
+
+            acoesVencedorFree
+                .classList
+                .add('oculto');
 
         }
     );
-
 
 // =========================================================
 // RESET FREESTYLE

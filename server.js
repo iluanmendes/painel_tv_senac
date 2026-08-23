@@ -55,7 +55,6 @@ let estadoCompeticao = {
 
         vencedor: null
     }
-
 };
 
 
@@ -76,8 +75,7 @@ if (fs.existsSync(ARQUIVO_JSON)) {
 
         if (Array.isArray(dadosLidos)) {
 
-            dadosApp.rankingFreestyle =
-                dadosLidos;
+            dadosApp.rankingFreestyle = dadosLidos;
 
         } else {
 
@@ -100,13 +98,8 @@ if (fs.existsSync(ARQUIVO_JSON)) {
         );
 
     }
-
 }
 
-
-// =========================================================
-// SALVAR DADOS
-// =========================================================
 
 function salvarDados() {
 
@@ -130,35 +123,6 @@ salvarDados();
 // =========================================================
 
 let timerServidor = null;
-
-
-// =========================================================
-// DESFAZER ÚLTIMA AÇÃO
-// =========================================================
-
-let estadoAnterior = null;
-let ultimaAcao = null;
-
-
-function salvarEstadoAnterior(descricao) {
-
-    estadoAnterior = JSON.parse(
-        JSON.stringify(estadoCompeticao)
-    );
-
-    ultimaAcao = descricao;
-
-}
-
-
-function limparEstadoAnterior() {
-
-    estadoAnterior = null;
-
-    ultimaAcao = null;
-
-}
-
 
 
 function pararTimer() {
@@ -280,9 +244,9 @@ io.on('connection', (socket) => {
     );
 
 
-    // -----------------------------------------------------
+    // =====================================================
     // SINCRONIZAÇÃO INICIAL
-    // -----------------------------------------------------
+    // =====================================================
 
     socket.emit(
         'carregar_dados',
@@ -296,7 +260,7 @@ io.on('connection', (socket) => {
 
 
     // =====================================================
-    // AUTENTICAÇÃO DO CONTROLE
+    // AUTENTICAÇÃO
     // =====================================================
 
     socket.on(
@@ -330,7 +294,8 @@ io.on('connection', (socket) => {
             }
 
 
-            controleLogadoId = socket.id;
+            controleLogadoId =
+                socket.id;
 
 
             socket.emit(
@@ -368,35 +333,8 @@ io.on('connection', (socket) => {
                 return;
             }
 
-            // =====================================================
-            // REGISTRA O ESTADO ANTES DE UMA ALTERAÇÃO
-            // =====================================================
-
-            const acoesDesfaziveis = [
-                'PREPARAR_TORNEIO',
-                'RETOMAR_TORNEIO',
-                'PAUSAR_TORNEIO',
-                'PONTUAR_TORNEIO',
-                'INICIAR_FREESTYLE',
-                'REGISTRAR_FREESTYLE'
-            ];
-
-
-            if (
-                acoesDesfaziveis.includes(
-                    acao.tipo
-                )
-            ) {
-
-                salvarEstadoAnterior(
-                    acao.tipo
-                );
-
-            }
-
 
             switch (acao.tipo) {
-
 
                 // =========================================
                 // MUDAR MODO
@@ -409,8 +347,51 @@ io.on('connection', (socket) => {
                     estadoCompeticao.modo =
                         acao.modo;
 
-                    estadoCompeticao.status =
-                        'aguardando';
+                    /*
+                     * Ao entrar no Torneio fora de uma
+                     * partida em andamento, mostra
+                     * imediatamente o tempo configurado.
+                     */
+                    if (
+                        acao.modo === 'torneio' &&
+                        estadoCompeticao.status !==
+                        'em_andamento'
+                    ) {
+
+                        estadoCompeticao.status =
+                            'aguardando';
+
+                        estadoCompeticao.torneio =
+                        {
+                            robo1:
+                                'Robô 1',
+
+                            robo2:
+                                'Robô 2',
+
+                            pontos1:
+                                0,
+
+                            pontos2:
+                                0,
+
+                            tempoRestante:
+                                dadosApp
+                                    .configuracoes
+                                    .tempoTorneio ||
+                                180,
+
+                            vencedor:
+                                null
+                        };
+
+                    } else {
+
+                        estadoCompeticao.status =
+                            'aguardando';
+
+                    }
+
 
                     transmitirEstado();
 
@@ -431,6 +412,7 @@ io.on('connection', (socket) => {
                     estadoCompeticao.status =
                         'preparado';
 
+
                     estadoCompeticao.torneio = {
 
                         robo1:
@@ -441,9 +423,11 @@ io.on('connection', (socket) => {
                             acao.robo2 ||
                             'Robô Vermelho',
 
-                        pontos1: 0,
+                        pontos1:
+                            0,
 
-                        pontos2: 0,
+                        pontos2:
+                            0,
 
                         tempoRestante:
                             dadosApp
@@ -451,7 +435,8 @@ io.on('connection', (socket) => {
                                 .tempoTorneio ||
                             180,
 
-                        vencedor: null
+                        vencedor:
+                            null
 
                     };
 
@@ -462,7 +447,7 @@ io.on('connection', (socket) => {
 
 
                 // =========================================
-                // INICIAR / RETOMAR TORNEIO
+                // RETOMAR TORNEIO
                 // =========================================
 
                 case 'RETOMAR_TORNEIO':
@@ -474,6 +459,28 @@ io.on('connection', (socket) => {
                         return;
                     }
 
+
+                    if (
+                        estadoCompeticao.status ===
+                        'finalizado'
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        estadoCompeticao
+                            .torneio
+                            .tempoRestante <= 0
+                    ) {
+
+                        return;
+
+                    }
+
+
                     iniciarTimerTorneio();
 
                     break;
@@ -484,6 +491,24 @@ io.on('connection', (socket) => {
                 // =========================================
 
                 case 'PAUSAR_TORNEIO':
+
+                    if (
+                        estadoCompeticao.modo !==
+                        'torneio'
+                    ) {
+                        return;
+                    }
+
+
+                    if (
+                        estadoCompeticao.status !==
+                        'em_andamento'
+                    ) {
+
+                        return;
+
+                    }
+
 
                     pararTimer();
 
@@ -509,28 +534,76 @@ io.on('connection', (socket) => {
                     }
 
 
-                    if (acao.robo === 1) {
+                    /*
+                     * REGRA IMPORTANTE:
+                     * só pode pontuar com a partida
+                     * efetivamente em andamento.
+                     */
+
+                    if (
+                        estadoCompeticao.status !==
+                        'em_andamento'
+                    ) {
+
+                        socket.emit(
+                            'erro_comando',
+                            'A partida precisa estar em andamento para pontuar.'
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        ![1, 2].includes(
+                            Number(acao.robo)
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    const pontos =
+                        Number(acao.pontos);
+
+
+                    if (
+                        ![0, 1, 2].includes(
+                            pontos
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    if (
+                        acao.robo === 1
+                    ) {
 
                         estadoCompeticao
                             .torneio
                             .pontos1 =
-                            acao.pontos;
+                            pontos;
 
                     }
 
 
-                    if (acao.robo === 2) {
+                    if (
+                        acao.robo === 2
+                    ) {
 
                         estadoCompeticao
                             .torneio
                             .pontos2 =
-                            acao.pontos;
+                            pontos;
 
                     }
 
 
-                    // Vitória
-                    if (acao.pontos >= 2) {
+                    if (
+                        pontos >= 2
+                    ) {
 
                         pararTimer();
 
@@ -549,30 +622,99 @@ io.on('connection', (socket) => {
                                     .torneio
                                     .robo2;
 
-                    } else {
-
-                        const p1 =
-                            estadoCompeticao
-                                .torneio
-                                .pontos1;
-
-                        const p2 =
-                            estadoCompeticao
-                                .torneio
-                                .pontos2;
+                    }
 
 
-                        if (
-                            p1 < 2 &&
-                            p2 < 2
-                        ) {
+                    transmitirEstado();
 
-                            estadoCompeticao
-                                .torneio
-                                .vencedor =
-                                null;
+                    break;
 
-                        }
+
+                // =========================================
+                // DESFAZER PONTO
+                // =========================================
+
+                case 'DESFAZER_PONTO_TORNEIO':
+
+                    if (
+                        estadoCompeticao.modo !==
+                        'torneio'
+                    ) {
+                        return;
+                    }
+
+
+                    if (
+                        ![1, 2].includes(
+                            Number(acao.robo)
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    /*
+                     * O tempo NÃO é alterado.
+                     * Apenas a pontuação volta um ponto.
+                     */
+
+                    if (
+                        acao.robo === 1
+                    ) {
+
+                        estadoCompeticao
+                            .torneio
+                            .pontos1 =
+                            Math.max(
+                                0,
+                                estadoCompeticao
+                                    .torneio
+                                    .pontos1 - 1
+                            );
+
+                    }
+
+
+                    if (
+                        acao.robo === 2
+                    ) {
+
+                        estadoCompeticao
+                            .torneio
+                            .pontos2 =
+                            Math.max(
+                                0,
+                                estadoCompeticao
+                                    .torneio
+                                    .pontos2 - 1
+                            );
+
+                    }
+
+
+                    /*
+                     * Ao desfazer uma vitória,
+                     * a partida fica pausada.
+                     * O operador decide se quer retomar.
+                     */
+
+                    if (
+                        estadoCompeticao
+                            .torneio
+                            .pontos1 < 2 &&
+                        estadoCompeticao
+                            .torneio
+                            .pontos2 < 2
+                    ) {
+
+                        estadoCompeticao
+                            .torneio
+                            .vencedor =
+                            null;
+
+
+                        estadoCompeticao.status =
+                            'pausado';
 
                     }
 
@@ -593,17 +735,24 @@ io.on('connection', (socket) => {
                     estadoCompeticao.status =
                         'cancelado';
 
-                    estadoCompeticao
-                        .torneio
-                        .pontos1 = 0;
 
                     estadoCompeticao
                         .torneio
-                        .pontos2 = 0;
+                        .pontos1 =
+                        0;
+
 
                     estadoCompeticao
                         .torneio
-                        .vencedor = null;
+                        .pontos2 =
+                        0;
+
+
+                    estadoCompeticao
+                        .torneio
+                        .vencedor =
+                        null;
+
 
                     estadoCompeticao
                         .torneio
@@ -625,39 +774,29 @@ io.on('connection', (socket) => {
 
                 case 'INICIAR_FREESTYLE':
 
-                    pararTimer();
+                    if (
+                        estadoCompeticao.modo !==
+                        'freestyle'
+                    ) {
 
-                    estadoCompeticao.modo =
-                        'freestyle';
+                        return;
 
-                    estadoCompeticao.status =
-                        'preparado';
-
-                    estadoCompeticao.freestyle = {
-
-                        robo1:
-                            acao.robo1 ||
-                            'Robô Azul',
-
-                        robo2:
-                            acao.robo2 ||
-                            'Robô Vermelho',
-
-                        tempoDecorrido: 0,
-
-                        vencedor: null
-
-                    };
+                    }
 
 
-                    transmitirEstado();
+                    if (
+                        estadoCompeticao.status !==
+                        'preparado'
+                    ) {
+
+                        return;
+
+                    }
 
 
                     iniciarTimerFreestyle();
 
                     break;
-
-
                 // =========================================
                 // REGISTRAR FREESTYLE
                 // =========================================
@@ -669,6 +808,21 @@ io.on('connection', (socket) => {
                         'freestyle'
                     ) {
                         return;
+                    }
+
+
+                    if (
+                        estadoCompeticao.status !==
+                        'em_andamento'
+                    ) {
+
+                        socket.emit(
+                            'erro_comando',
+                            'A partida freestyle não está em andamento.'
+                        );
+
+                        return;
+
                     }
 
 
@@ -760,13 +914,17 @@ io.on('connection', (socket) => {
                     estadoCompeticao.status =
                         'cancelado';
 
-                    estadoCompeticao
-                        .freestyle
-                        .tempoDecorrido = 0;
 
                     estadoCompeticao
                         .freestyle
-                        .vencedor = null;
+                        .tempoDecorrido =
+                        0;
+
+
+                    estadoCompeticao
+                        .freestyle
+                        .vencedor =
+                        null;
 
 
                     transmitirEstado();
@@ -774,84 +932,40 @@ io.on('connection', (socket) => {
                     break;
 
                 // =========================================
-                // DESFAZER ÚLTIMA AÇÃO
+                // PREPARAR FREESTYLE
                 // =========================================
 
-                case 'DESFAZER_ULTIMA_ACAO':
-
-                    if (!estadoAnterior) {
-
-                        socket.emit(
-                            'erro_desfazer',
-                            'Não há nenhuma ação para desfazer.'
-                        );
-
-                        return;
-
-                    }
-
+                case 'PREPARAR_FREESTYLE':
 
                     pararTimer();
 
+                    estadoCompeticao.modo =
+                        'freestyle';
 
-                    estadoCompeticao =
-                        JSON.parse(
-                            JSON.stringify(
-                                estadoAnterior
-                            )
-                        );
+                    estadoCompeticao.status =
+                        'preparado';
 
 
-                    const acaoDesfeita =
-                        ultimaAcao;
+                    estadoCompeticao.freestyle = {
+
+                        robo1:
+                            acao.robo1 ||
+                            'Robô Azul',
+
+                        robo2:
+                            acao.robo2 ||
+                            'Robô Vermelho',
+
+                        tempoDecorrido:
+                            0,
+
+                        vencedor:
+                            null
+
+                    };
 
 
-                    limparEstadoAnterior();
-
-
-                    // =====================================================
-                    // RESTAURA O TIMER SE NECESSÁRIO
-                    // =====================================================
-
-                    if (
-                        estadoCompeticao.status ===
-                        'em_andamento'
-                    ) {
-
-                        if (
-                            estadoCompeticao.modo ===
-                            'torneio'
-                        ) {
-
-                            iniciarTimerTorneio();
-
-                        }
-
-
-                        if (
-                            estadoCompeticao.modo ===
-                            'freestyle'
-                        ) {
-
-                            iniciarTimerFreestyle();
-
-                        }
-
-                    } else {
-
-                        transmitirEstado();
-
-                    }
-
-
-                    io.emit(
-                        'acao_desfeita',
-                        {
-                            acao:
-                                acaoDesfeita
-                        }
-                    );
-
+                    transmitirEstado();
 
                     break;
 
@@ -877,8 +991,56 @@ io.on('connection', (socket) => {
             }
 
 
-            dadosApp.configuracoes =
-                novaConfig;
+            const novoTempo =
+                Number(
+                    novaConfig.tempoTorneio
+                );
+
+
+            if (
+                !Number.isFinite(
+                    novoTempo
+                ) ||
+                novoTempo <= 0
+            ) {
+
+                socket.emit(
+                    'erro_comando',
+                    'Tempo inválido.'
+                );
+
+                return;
+
+            }
+
+
+            dadosApp.configuracoes = {
+
+                tempoTorneio:
+                    novoTempo
+
+            };
+
+
+            /*
+             * Se não existe uma partida
+             * em andamento, o novo tempo
+             * já passa a aparecer no painel.
+             */
+
+            if (
+                estadoCompeticao.modo ===
+                'torneio' &&
+                estadoCompeticao.status !==
+                'em_andamento'
+            ) {
+
+                estadoCompeticao
+                    .torneio
+                    .tempoRestante =
+                    novoTempo;
+
+            }
 
 
             salvarDados();
@@ -888,6 +1050,9 @@ io.on('connection', (socket) => {
                 'carregar_dados',
                 dadosApp
             );
+
+
+            transmitirEstado();
 
         }
     );
@@ -912,7 +1077,8 @@ io.on('connection', (socket) => {
                 controleLogadoId
             ) {
 
-                controleLogadoId = null;
+                controleLogadoId =
+                    null;
 
             }
 
@@ -921,10 +1087,6 @@ io.on('connection', (socket) => {
 
 });
 
-
-// =========================================================
-// SERVIDOR
-// =========================================================
 
 const PORT = 3000;
 

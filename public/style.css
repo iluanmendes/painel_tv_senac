@@ -1503,6 +1503,58 @@ button:active {
     color: white;
 }
 
+/* =========================================================
+   CONTROLE — AÇÕES SECUNDÁRIAS
+========================================================= */
+
+.btn-corrigir {
+    background: transparent;
+    color: #666;
+    border: 1px solid #ddd;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.55rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+}
+
+
+.btn-corrigir:hover {
+    background: #f2f2f2;
+}
+
+
+.btn-corrigir:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+
+.grupo-pontuacao {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.btn-iniciar-partida {
+    font-size: 1.35rem;
+    padding: 1.2rem;
+}
+
+
+.btn-cancelar {
+    margin-top: 1rem;
+}
+
+
+.descricao-controle {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+
+
 
 /* =========================================================
    =========================================================
