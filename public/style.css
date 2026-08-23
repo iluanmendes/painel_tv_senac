@@ -68,7 +68,7 @@ body.tela-tv {
     background-image:
         linear-gradient(
             rgba(245, 245, 242, .90),
-            rgba(245, 245, 242, .90)
+            rgba(245, 245, 242, .50)
         ),
         url('fundo-senac.jpg');
 

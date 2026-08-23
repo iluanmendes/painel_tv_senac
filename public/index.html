@@ -48,70 +48,35 @@
             </div>
         </section>
 
-        <section id="modo-freestyle" class="oculto layout-freestyle">
+       <!-- MODO FREESTYLE -->
+        <section id="modo-freestyle" class="oculto">
+            
+            <!-- Arena 1v1 (Sem a div de pontos/bexigas) -->
+            <div class="layout-torneio">
+                <div class="competidor card-azul">
+                    <img src="personagem-robo1.png" alt="" class="personagem personagem-esquerda">
+                    <h2 id="nome-free-robo1">Robô 1</h2>
+                </div>
 
-            <div class="titulo-freestyle">
-                <span class="seta seta-esquerda">»</span>
-                <span>MODO <strong>FREESTYLE</strong></span>
-                <span class="seta seta-direita">«</span>
+                <div class="centro-placar">
+                    <h3 class="label-tempo">TEMPO FREESTYLE</h3>
+                    <div class="cronometro" id="cronometro-freestyle">00:00</div>
+                    <h2 id="vencedor-freestyle" class="mensagem-vencedor"></h2>
+                </div>
+
+                <div class="competidor card-vermelho">
+                    <img src="personagem-robo2.png" alt="" class="personagem personagem-direita">
+                    <h2 id="nome-free-robo2">Robô 2</h2>
+                </div>
             </div>
 
-            <div class="placar-freestyle">
-
-                <div class="competidor-freestyle freestyle-azul">
-                    <img src="personagem-robo1.png" alt="" class="personagem-freestyle personagem-freestyle-esquerda">
-
-                    <div class="nome-freestyle" id="nome-freestyle1">
-                        Robô 1
-                    </div>
-
-                    <div class="pontos-freestyle" id="pontos-freestyle1">
-                        125
-                    </div>
-                </div>
-
-                <div class="tempo-freestyle">
-                    <div class="label-tempo-freestyle">
-                        <span>»</span>
-                        TEMPO
-                        <span>«</span>
-                    </div>
-
-                    <div class="cronometro cronometro-grande" id="cronometro-freestyle">
-                        00:25
-                    </div>
-
-                    <div class="linha-tempo"></div>
-                </div>
-
-                <div class="competidor-freestyle freestyle-vermelho">
-                    <img src="personagem-robo2.png" alt="" class="personagem-freestyle personagem-freestyle-direita">
-
-                    <div class="nome-freestyle" id="nome-freestyle2">
-                        Robô 2
-                    </div>
-
-                    <div class="pontos-freestyle" id="pontos-freestyle2">
-                        98
-                    </div>
-                </div>
-
-            </div>
-
+            <!-- O Ranking Brutalista continua aqui embaixo -->
             <div class="historico">
-                <h3 class="titulo-ranking">
-                    RANKING FREESTYLE
-                </h3>
-
-                <ul id="lista-freestyle"></ul>
+                <h3 class="titulo-ranking">RANKING FREESTYLE</h3>
+                <ul id="lista-freestyle">
+                    <!-- Registros inseridos via JS -->
+                </ul>
             </div>
-
-            <div class="mensagem-freestyle">
-                <span class="icone-mensagem">✦</span>
-                AQUI A <strong>CRIATIVIDADE</strong> GANHA PONTOS!
-                <span class="icone-mensagem">✦</span>
-            </div>
-
         </section>
 
 

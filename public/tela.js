@@ -1,15 +1,23 @@
 const socket = io();
 
-// Variáveis Globais de Configuração
+// =========================================
+// VARIÁVEIS GLOBAIS
+// =========================================
 let rankingFreestyle = [];
 let configuracoesApp = { tempoTorneio: 180 };
 let timerInterval;
 let tempoAtualSegundos = 0;
 
-// Recebe os dados e configurações do JSON assim que conecta
+
+// =========================================
+// SINCRONIZAÇÃO INICIAL (JSON)
+// =========================================
 socket.on('carregar_dados', (dados) => {
+    if (!dados) return;
     rankingFreestyle = dados.rankingFreestyle || [];
-    configuracoesApp = dados.configuracoes;
+    if(dados.configuracoes) {
+        configuracoesApp = dados.configuracoes;
+    }
     atualizarListaFreestyle();
 });
 
@@ -19,47 +27,89 @@ function formatarTempo(segundos) {
     return `${min}:${seg}`;
 }
 
+
+// =========================================
+// TRAVA DE SEGURANÇA CONTRA ERROS DE NULL
+// =========================================
+function setTexto(id, texto, isHTML = false) {
+    const elemento = document.getElementById(id);
+    if (elemento) {
+        if (isHTML) {
+            elemento.innerHTML = texto;
+        } else {
+            elemento.innerText = texto;
+        }
+    } else {
+        console.warn(`Aviso: O elemento com ID '${id}' não foi encontrado no HTML da TV.`);
+    }
+}
+
+
+// =========================================
+// MONTAGEM DO RANKING FREESTYLE (DOM)
+// =========================================
+function atualizarListaFreestyle() {
+    const listaFreestyle = document.getElementById('lista-freestyle');
+    if(!listaFreestyle) return; // Se a lista não existir, aborta em vez de dar erro
+    
+    listaFreestyle.innerHTML = '';
+    
+    rankingFreestyle.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span><b>${index + 1}º</b> ${item.nome}</span> 
+                        <span>⏰ ${formatarTempo(item.tempoSegundos)} (às ${item.horario})</span>`;
+        listaFreestyle.appendChild(li);
+    });
+}
+
+
+// =========================================
+// REAÇÕES DA TV AOS COMANDOS DO CONTROLE
+// =========================================
 socket.on('atualiza_tela', (acao) => {
     switch(acao.tipo) {
         
         // --- GERENCIAMENTO DE MODO ---
         case 'MUDAR_MODO':
             clearInterval(timerInterval);
-            document.getElementById('vencedor-torneio').innerText = ""; // Limpa lixo da tela
+            setTexto('vencedor-torneio', ""); 
+            
+            const secTorneio = document.getElementById('modo-torneio');
+            const secFreestyle = document.getElementById('modo-freestyle');
+            
             if(acao.modo === 'torneio') {
-                document.getElementById('modo-torneio').classList.remove('oculto');
-                document.getElementById('modo-freestyle').classList.add('oculto');
-                document.getElementById('titulo-modo').innerText = "Modo Torneio";
+                if (secTorneio) secTorneio.classList.remove('oculto');
+                if (secFreestyle) secFreestyle.classList.add('oculto');
+                setTexto('titulo-modo', "Modo Torneio");
             } else {
-                document.getElementById('modo-torneio').classList.add('oculto');
-                document.getElementById('modo-freestyle').classList.remove('oculto');
-                document.getElementById('titulo-modo').innerText = "Modo Freestyle";
+                if (secTorneio) secTorneio.classList.add('oculto');
+                if (secFreestyle) secFreestyle.classList.remove('oculto');
+                setTexto('titulo-modo', "Modo Freestyle");
             }
             break;
 
         // --- MODO TORNEIO ---
         case 'PREPARAR_TORNEIO':
             clearInterval(timerInterval);
-            document.getElementById('nome-robo1').innerText = acao.robo1;
-            document.getElementById('nome-robo2').innerText = acao.robo2;
-            document.getElementById('bexigas-robo1').innerText = "0";
-            document.getElementById('bexigas-robo2').innerText = "0";
-            document.getElementById('vencedor-torneio').innerText = ""; // Prepara área do vencedor
+            setTexto('nome-robo1', acao.robo1);
+            setTexto('nome-robo2', acao.robo2);
+            setTexto('bexigas-robo1', "0");
+            setTexto('bexigas-robo2', "0");
+            setTexto('vencedor-torneio', ""); 
             
-            // Pega o tempo do arquivo JSON
-            tempoAtualSegundos = configuracoesApp.tempoTorneio;
-            document.getElementById('cronometro-torneio').innerText = formatarTempo(tempoAtualSegundos);
+            tempoAtualSegundos = configuracoesApp.tempoTorneio || 180;
+            setTexto('cronometro-torneio', formatarTempo(tempoAtualSegundos));
             break;
 
         case 'RETOMAR_TORNEIO':
-            clearInterval(timerInterval); // Garante que não duplique intervalos
+            clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 if(tempoAtualSegundos > 0) {
                     tempoAtualSegundos--;
-                    document.getElementById('cronometro-torneio').innerText = formatarTempo(tempoAtualSegundos);
+                    setTexto('cronometro-torneio', formatarTempo(tempoAtualSegundos));
                 } else {
                     clearInterval(timerInterval);
-                    document.getElementById('vencedor-torneio').innerText = "Tempo Esgotado!";
+                    setTexto('vencedor-torneio', "Tempo Esgotado!");
                 }
             }, 1000);
             break;
@@ -69,49 +119,49 @@ socket.on('atualiza_tela', (acao) => {
             break;
 
         case 'PONTUAR_TORNEIO':
-            const bexigas1 = document.getElementById('bexigas-robo1');
-            const bexigas2 = document.getElementById('bexigas-robo2');
+            setTexto(`bexigas-robo${acao.robo}`, acao.pontos);
             
-            if(acao.robo === 1) bexigas1.innerText = acao.pontos;
-            if(acao.robo === 2) bexigas2.innerText = acao.pontos;
+            const bexigas1 = document.getElementById('bexigas-robo1')?.innerText || "0";
+            const bexigas2 = document.getElementById('bexigas-robo2')?.innerText || "0";
             
-            // A Lógica do Botão "Desfazer" 
-            // Se as bexigas caírem pra menos de 2, ele apaga a faixa de "Vitória"
-            if (acao.pontos < 2 && (parseInt(bexigas1.innerText) < 2 && parseInt(bexigas2.innerText) < 2)) {
-                document.getElementById('vencedor-torneio').innerText = "";
+            if (acao.pontos < 2 && (parseInt(bexigas1) < 2 && parseInt(bexigas2) < 2)) {
+                setTexto('vencedor-torneio', "");
             }
 
-            // Condição de Vitória (Estourar 2 Bexigas)
             if(acao.pontos === 2) {
                 clearInterval(timerInterval);
-                const nomeVencedor = acao.robo === 1 ? document.getElementById('nome-robo1').innerText : document.getElementById('nome-robo2').innerText;
-                document.getElementById('vencedor-torneio').innerText = `Vitória de ${nomeVencedor}!`;
+                const nomeVencedor = acao.robo === 1 ? 
+                    (document.getElementById('nome-robo1')?.innerText || "Robô 1") : 
+                    (document.getElementById('nome-robo2')?.innerText || "Robô 2");
+                setTexto('vencedor-torneio', `Vitória de ${nomeVencedor}!`);
             }
             break;
             
         case 'CANCELAR_TORNEIO':
             clearInterval(timerInterval);
-            document.getElementById('nome-robo1').innerText = "Robô 1";
-            document.getElementById('nome-robo2').innerText = "Robô 2";
-            document.getElementById('bexigas-robo1').innerText = "0";
-            document.getElementById('bexigas-robo2').innerText = "0";
-            document.getElementById('cronometro-torneio').innerText = formatarTempo(configuracoesApp.tempoTorneio);
-            document.getElementById('vencedor-torneio').innerText = "Partida Cancelada";
+            setTexto('nome-robo1', "Robô 1");
+            setTexto('nome-robo2', "Robô 2");
+            setTexto('bexigas-robo1', "0");
+            setTexto('bexigas-robo2', "0");
+            setTexto('cronometro-torneio', formatarTempo(configuracoesApp.tempoTorneio || 180));
+            setTexto('vencedor-torneio', "Partida Cancelada");
             break;
 
+        // --- MODO FREESTYLE --- 
+        // --- MODO FREESTYLE --- 
         case 'INICIAR_FREESTYLE':
-            // Monta o "Robô Azul VS Robô Vermelho" com as cores do CSS
-            document.getElementById('confronto-atual-tv').innerHTML = 
-                `<span style="color: var(--azul)">${acao.robo1}</span> 
-                 <strong style="color: white">VS</strong> 
-                 <span style="color: var(--vermelho)">${acao.robo2}</span>`;
+            // Injeta os nomes nos cards da arena
+            setTexto('nome-free-robo1', acao.robo1);
+            setTexto('nome-free-robo2', acao.robo2);
+            setTexto('vencedor-freestyle', ""); 
             
             tempoAtualSegundos = 0;
-            cronometroFreestyle.innerText = formatarTempo(tempoAtualSegundos);
+            setTexto('cronometro-freestyle', formatarTempo(tempoAtualSegundos));
+            
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 tempoAtualSegundos++;
-                cronometroFreestyle.innerText = formatarTempo(tempoAtualSegundos);
+                setTexto('cronometro-freestyle', formatarTempo(tempoAtualSegundos));
             }, 1000);
             break;
 
@@ -123,37 +173,25 @@ socket.on('atualiza_tela', (acao) => {
                 horario: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
             };
             
-            // --- NOVO: Envia para o servidor salvar no arquivo JSON ---
+            // Envia para o servidor salvar no JSON
             socket.emit('salvar_novo_registro', registro);
-
-
-
+            
+            // Atualiza a tela localmente
             rankingFreestyle.push(registro);
             rankingFreestyle.sort((a, b) => a.tempoSegundos - b.tempoSegundos);
-            
             atualizarListaFreestyle();
             
-            // Anuncia quem ganhou no topo da tela
-            document.getElementById('confronto-atual-tv').innerHTML = 
-                `<span style="color: var(--verde)">🏆 Vitória de ${acao.vencedor}!</span>`;
+            // Anuncia o vencedor no centro da arena
+            setTexto('vencedor-freestyle', `Vitória de ${acao.vencedor}!`);
             break;
 
         case 'CANCELAR_FREESTYLE':
             clearInterval(timerInterval);
             tempoAtualSegundos = 0;
-            cronometroFreestyle.innerText = "00:00";
-            document.getElementById('confronto-atual-tv').innerHTML = 
-                `<span style="color: var(--alerta)">Partida Cancelada</span>`;
+            setTexto('cronometro-freestyle', "00:00");
+            setTexto('nome-free-robo1', "Robô 1");
+            setTexto('nome-free-robo2', "Robô 2");
+            setTexto('vencedor-freestyle', "Partida Cancelada");
             break;
     }
 });
-
-function atualizarListaFreestyle() {
-    listaFreestyle.innerHTML = '';
-    rankingFreestyle.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `<span><b>${index + 1}º</b> ${item.nome}</span> 
-                        <span>⏰ ${formatarTempo(item.tempoSegundos)} (às ${item.horario})</span>`;
-        listaFreestyle.appendChild(li);
-    });
-}

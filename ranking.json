@@ -15,9 +15,59 @@
     "horario": "01:52"
   },
   {
+    "nome": "Pedro",
+    "tempoSegundos": 0,
+    "horario": "02:33"
+  },
+  {
+    "nome": "a",
+    "tempoSegundos": 1,
+    "horario": "08:23"
+  },
+  {
+    "nome": "f",
+    "tempoSegundos": 1,
+    "horario": "08:24"
+  },
+  {
+    "nome": "c",
+    "tempoSegundos": 2,
+    "horario": "08:23"
+  },
+  {
     "nome": "ab",
     "tempoSegundos": 3,
     "horario": "23:45"
+  },
+  {
+    "nome": "Robô Vermelho",
+    "tempoSegundos": 4,
+    "horario": "03:01"
+  },
+  {
+    "nome": "Robota",
+    "tempoSegundos": 5,
+    "horario": "03:00"
+  },
+  {
+    "nome": "bsnaeb",
+    "tempoSegundos": 7,
+    "horario": "08:42"
+  },
+  {
+    "nome": "Robo 1",
+    "tempoSegundos": 7,
+    "horario": "09:17"
+  },
+  {
+    "nome": "Robo 1",
+    "tempoSegundos": 7,
+    "horario": "09:17"
+  },
+  {
+    "nome": "Robô Azul",
+    "tempoSegundos": 8,
+    "horario": "02:49"
   },
   {
     "nome": "Zéu Britto",
@@ -25,8 +75,43 @@
     "horario": "00:23"
   },
   {
+    "nome": "ab",
+    "tempoSegundos": 12,
+    "horario": "02:38"
+  },
+  {
+    "nome": "b",
+    "tempoSegundos": 24,
+    "horario": "02:48"
+  },
+  {
+    "nome": "1",
+    "tempoSegundos": 114,
+    "horario": "02:47"
+  },
+  {
     "nome": "Jô Soares",
     "tempoSegundos": 115,
     "horario": "00:26"
+  },
+  {
+    "nome": "Robo cop",
+    "tempoSegundos": 180,
+    "horario": "02:08"
+  },
+  {
+    "nome": "a",
+    "tempoSegundos": 180,
+    "horario": "02:09"
+  },
+  {
+    "nome": "Robô Azul",
+    "tempoSegundos": 180,
+    "horario": "02:09"
+  },
+  {
+    "nome": "Robô Vermelho",
+    "tempoSegundos": 180,
+    "horario": "02:09"
   }
 ]

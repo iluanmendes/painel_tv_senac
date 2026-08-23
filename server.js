@@ -71,11 +71,17 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Salva o ranking freestyle
+   // Salva o ranking freestyle
     socket.on('salvar_novo_registro', (registro) => {
+        // Trava de segurança: se o array não existir, cria um novo
+        if (!dadosApp.rankingFreestyle) dadosApp.rankingFreestyle = [];
+        
         dadosApp.rankingFreestyle.push(registro);
         dadosApp.rankingFreestyle.sort((a, b) => a.tempoSegundos - b.tempoSegundos);
         salvarDados();
+        
+        // Manda os dados atualizados para quem estiver conectado
+        io.emit('carregar_dados', dadosApp);
     });
 
     // Salva as configurações de tempo
