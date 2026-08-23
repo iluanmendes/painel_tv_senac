@@ -112,16 +112,35 @@ socket.on(
 
 function sincronizarControle() {
 
-    if (!estadoCompeticao) {
-        return;
+    if (!estadoCompeticao) return;
+
+    if (!estadoCompeticao.modo) {
+
+        document.getElementById('controles-torneio').classList.add('oculto');
+        document.getElementById('controles-freestyle').classList.add('oculto');
+
+        inputR1.disabled = false;
+        inputR2.disabled = false;
+        inputR1.value = '';
+        inputR2.value = '';
+
+        inputFreeRobo1.disabled = false;
+        inputFreeRobo2.disabled = false;
+        inputFreeRobo1.value = '';
+        inputFreeRobo2.value = '';
+
+        acoesPreparo.classList.remove('oculto');
+        acoesJogo.classList.add('oculto');
+        acoesPreparoFree.classList.remove('oculto');
+        acoesJogoFree.classList.add('oculto');
     }
 
     sincronizarTorneio();
     sincronizarFreestyle();
-    atualizarAbaAtiva();
-
-    
 }
+
+
+
 function atualizarAbaAtiva() {
     document.getElementById('btn-modo-torneio')
         .classList.toggle('ativo', estadoCompeticao?.modo === 'torneio');
@@ -334,18 +353,36 @@ document
     );
 
 
-document
-    .getElementById(
-        'btn-modo-config'
-    )
-    .addEventListener(
-        'click',
-        () =>
-            alternarModo(
-                'controles-config',
-                null
-            )
+document.getElementById('btn-abrir-config').addEventListener('click', () => {
+    document.getElementById('controles-torneio').classList.add('oculto');
+    document.getElementById('controles-freestyle').classList.add('oculto');
+    document.getElementById('controles-config').classList.remove('oculto');
+});
+
+document.getElementById('btn-fechar-config').addEventListener('click', () => {
+    document.getElementById('controles-config').classList.add('oculto');
+
+    // Volta para a tela do modo que estava ativo, se houver
+    if (estadoCompeticao?.modo === 'torneio') {
+        document.getElementById('controles-torneio').classList.remove('oculto');
+    } else if (estadoCompeticao?.modo === 'freestyle') {
+        document.getElementById('controles-freestyle').classList.remove('oculto');
+    }
+});
+
+
+document.getElementById('btn-resetar-competicao').addEventListener('click', () => {
+
+    const confirmado = confirm(
+        'Isso vai encerrar a partida/preparação atual e voltar a TV para a tela inicial.\n\n' +
+        'O ranking do Freestyle NÃO será apagado.\n\n' +
+        'Confirma?'
     );
+
+    if (!confirmado) return;
+    console.log("ASNAEB")
+    socket.emit('comando_controle', { tipo: 'RESETAR_COMPETICAO' });
+});
 
 
 // =========================================================

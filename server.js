@@ -967,6 +967,42 @@ io.on('connection', (socket) => {
 
                     break;
 
+                // =========================================
+                // RESETAR COMPETIÇÃO
+                // =========================================
+
+                case 'RESETAR_COMPETICAO':
+
+                    pararTimer();
+
+                    estadoCompeticao = {
+
+                        modo: null,
+
+                        status: 'aguardando',
+
+                        torneio: {
+                            robo1: 'Robô 1',
+                            robo2: 'Robô 2',
+                            pontos1: 0,
+                            pontos2: 0,
+                            tempoRestante: dadosApp.configuracoes.tempoTorneio || 180,
+                            vencedor: null
+                        },
+
+                        freestyle: {
+                            robo1: 'Robô 1',
+                            robo2: 'Robô 2',
+                            tempoDecorrido: 0,
+                            vencedor: null
+                        }
+
+                    };
+
+                    transmitirEstado();
+
+                    break;
+
             }
 
         }

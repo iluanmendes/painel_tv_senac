@@ -197,7 +197,6 @@ body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac>img {
     border: none;
     border-radius: 0;
 
-    color: var(--preto);
 
     font-family: var(--fonte-impacto);
 
@@ -1194,6 +1193,98 @@ button:active {
     box-shadow: none;
 }
 
+.botoes-modo {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 0;
+}
+
+.botoes-modo button {
+    margin-bottom: 0;
+}
+
+.botao-engrenagem {
+    margin-left: auto;
+    flex-shrink: 0;
+
+    width: 2.4rem;
+    height: 2.4rem;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+    color: #888;
+
+    border: 2px solid #ddd;
+    border-radius: 50%;
+
+    font-size: 1.15rem;
+
+    box-shadow: none;
+}
+
+.botao-engrenagem:hover {
+    background: #f2f2f2;
+    opacity: 1;
+}
+
+.btn-reset {
+    margin-top: .8rem;
+
+    background: transparent;
+    color: var(--vermelho);
+
+    border: 2px dashed var(--vermelho);
+    box-shadow: none;
+
+    font-size: .95rem;
+}
+
+.btn-reset:hover {
+    background: rgba(197, 31, 22, .06);
+    opacity: 1;
+}
+
+
+
+
+.cabecalho-config {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.cabecalho-config h3 {
+    margin-bottom: 0;
+}
+
+.botao-fechar {
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    margin: 0;
+
+    background: #f2f2f2;
+    color: #555;
+
+    border: none;
+    border-radius: 50%;
+
+    font-size: 1rem;
+    box-shadow: none;
+}
+
+.botao-fechar:hover {
+    background: #e5e5e5;
+}
+
+
+
+
 .botoes-modo button.ativo {
     outline: 3px solid var(--amarelo);
     outline-offset: -3px;
@@ -1494,18 +1585,19 @@ button:disabled:hover {
         width: 90px;
     }
 
-    .cor-destaque {
-        font-weight: inherit;
-    }
+  .cor-destaque {
+    font-family: var(--fonte-impacto);
+    font-weight: 400;
+    letter-spacing: 1px;
+}
 
-    .cor-destaque.cor-vermelho {
-        color: var(--vermelho);
-    }
+.cor-destaque.cor-vermelho {
+    color: var(--vermelho);
+}
 
-    .cor-destaque.cor-azul {
-        color: var(--azul);
-    }
-
+.cor-destaque.cor-azul {
+    color: var(--azul-claro);
+}
 
     .badge-modo {
         font-size: 1.05rem;

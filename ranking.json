@@ -1,6 +1,6 @@
 {
   "configuracoes": {
-    "tempoTorneio": 190
+    "tempoTorneio": 60
   },
   "rankingFreestyle": [
     {
@@ -55,6 +55,13 @@
       "horario": "15:58"
     },
     {
+      "nome": "456",
+      "robo1": "123",
+      "robo2": "456",
+      "tempoSegundos": 1,
+      "horario": "18:29"
+    },
+    {
       "nome": "c",
       "tempoSegundos": 2,
       "horario": "08:23"
@@ -84,6 +91,13 @@
       "robo2": "beansa",
       "tempoSegundos": 3,
       "horario": "15:36"
+    },
+    {
+      "nome": "123",
+      "robo1": "123",
+      "robo2": "456",
+      "tempoSegundos": 3,
+      "horario": "18:28"
     },
     {
       "nome": "Robô Vermelho",
@@ -129,6 +143,13 @@
       "robo2": "Cd",
       "tempoSegundos": 6,
       "horario": "10:50"
+    },
+    {
+      "nome": "Robô Azul",
+      "robo1": "Robô Azul",
+      "robo2": "Robô Vermelho",
+      "tempoSegundos": 6,
+      "horario": "18:29"
     },
     {
       "nome": "bsnaeb",

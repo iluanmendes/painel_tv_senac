@@ -14,6 +14,9 @@
     <header class="cabecalho-controle">
         <img src="logo-casa-aberta.png" alt="Casa Aberta Senac">
         <h1>Painel de Controle</h1>
+        <button id="btn-abrir-config" class="botao-engrenagem" title="Configurações" aria-label="Abrir configurações">
+            ⚙️
+        </button>
     </header>
 
     <div id="status-conexao" class="status-conexao status-offline">
@@ -40,14 +43,21 @@
             <div class="botoes-modo" style="display: flex; gap: 5px;">
                 <button id="btn-modo-torneio" class="btn-primario">Torneio</button>
                 <button id="btn-modo-freestyle" class="btn-primario">Freestyle</button>
-                <button id="btn-modo-config" class="btn-alerta">⚙️ Config</button>
             </div>
+
+            <button id="btn-resetar-competicao" class="btn-reset">
+                🔄 Zerar Partida / Voltar ao Início
+            </button>
+
         </div>
 
         <!-- MODO DE CONFIGURAÇÃO -->
         <div id="controles-config" class="card-controle oculto">
-            <h3>Configurações do Campeonato</h3>
-            <br>
+            <div class="cabecalho-config">
+                <h3>Configurações do Campeonato</h3>
+                <button id="btn-fechar-config" class="botao-fechar" aria-label="Fechar configurações">✕</button>
+            </div>
+
             <label>Tempo do Torneio (em segundos):</label>
             <input type="number" id="input-tempo-torneio" placeholder="Ex: 180" min="10">
             <button id="btn-salvar-config" class="btn-sucesso">Salvar Configurações</button>
