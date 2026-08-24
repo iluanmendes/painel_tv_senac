@@ -1,3 +1,14 @@
+@font-face {
+    font-family: 'Anton';
+    src: url('/fonts/Anton-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('/fonts/Montserrat-Regular.ttf') format('truetype');
+}
+
+
 :root {
     /* =========================================
        PALETA CASA ABERTA SENAC
@@ -15,6 +26,7 @@
     --vermelho: #c51f16;
 
     --amarelo: #f2b900;
+    --laranja: #e8720c;
 
 
     /* =========================================
@@ -197,6 +209,7 @@ body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac>img {
     border: none;
     border-radius: 0;
 
+    color: var(--preto);
 
     font-family: var(--fonte-impacto);
 
@@ -213,6 +226,35 @@ body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac>img {
     transition: all .4s ease;
 }
 
+
+/* =========================================
+   DESTAQUE DO MODO
+========================================= */
+
+.badge-modo .cor-destaque {
+    display: inline;
+
+    font-family: var(--fonte-impacto);
+
+    font-weight: 400;
+
+    letter-spacing: 1px;
+}
+
+
+.badge-modo .cor-destaque.cor-vermelho {
+    color: var(--vermelho);
+}
+
+
+.badge-modo .cor-destaque.cor-azul {
+    color: var(--azul-claro);
+}
+
+
+/* =========================================
+   ELEMENTOS DECORATIVOS
+========================================= */
 
 .badge-modo::before {
     content: "»";
@@ -231,14 +273,17 @@ body:has(#modo-freestyle:not(.oculto)) .cabecalho-senac>img {
 
 .badge-modo::after {
     content: "«";
+
     margin-left: .55rem;
+
     color: var(--amarelo);
-    /* era var(--azul) */
+
     font-family: var(--fonte-texto);
+
     font-size: 1.2em;
+
     font-weight: 900;
 }
-
 
 /* =========================================
    ESTADO INICIAL
@@ -1482,8 +1527,8 @@ button:disabled:hover {
 
         margin: 0 -15px;
     }
- 
-  
+
+
 }
 
 
@@ -1585,24 +1630,7 @@ button:disabled:hover {
         width: 90px;
     }
 
-  .cor-destaque {
-    font-family: var(--fonte-impacto);
-    font-weight: 400;
-    letter-spacing: 1px;
-}
-
-.cor-destaque.cor-vermelho {
-    color: var(--vermelho);
-}
-
-.cor-destaque.cor-azul {
-    color: var(--azul-claro);
-}
-
-    .badge-modo {
-        font-size: 1.05rem;
-    }
-
+  
 
     .arena {
         width: 92%;

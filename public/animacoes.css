@@ -1,131 +1,597 @@
 /* =========================================================
    ANIMAÇÕES — PAINEL DA TV
-   Arquivo 100% independente. Pode ser removido junto com
-   animacoes.js a qualquer momento sem quebrar o painel.
 ========================================================= */
 
 
-/* ---------- ENTRADA DE MODO (Torneio / Freestyle) ---------- */
+/* =========================================================
+   ENTRADA DE MODO
+========================================================= */
 
 #modo-torneio:not(.oculto),
 #modo-freestyle:not(.oculto) {
-    animation: entradaModo .6s ease both;
+
+    animation:
+        entradaModo
+        .6s
+        ease
+        both;
+
 }
+
 
 @keyframes entradaModo {
-    from { opacity: 0; transform: translateY(30px) scale(.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(30px)
+            scale(.97);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
 }
 
 
-/* ---------- PERSONAGENS FLUTUANDO (idle) ---------- */
+/* =========================================================
+   PERSONAGENS — IDLE
+========================================================= */
 
 .personagem-esquerda {
-    animation: flutuarEsquerda 3.4s ease-in-out infinite;
+
+    animation:
+        flutuarEsquerda
+        3.4s
+        ease-in-out
+        infinite;
+
 }
+
 
 .personagem-direita {
-    animation: flutuarDireita 3.4s ease-in-out infinite;
+
+    animation:
+        flutuarDireita
+        3.4s
+        ease-in-out
+        infinite;
+
     animation-delay: .6s;
+
 }
+
 
 @keyframes flutuarEsquerda {
-    0%, 100% { transform: translateY(0) rotate(-4deg); }
-    50%      { transform: translateY(-10px) rotate(-4deg); }
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(-4deg);
+    }
+
+    50% {
+        transform:
+            translateY(-10px)
+            rotate(-4deg);
+    }
+
 }
+
 
 @keyframes flutuarDireita {
-    0%, 100% { transform: translateY(0) rotate(4deg); }
-    50%      { transform: translateY(-10px) rotate(4deg); }
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(4deg);
+    }
+
+    50% {
+        transform:
+            translateY(-10px)
+            rotate(4deg);
+    }
+
 }
 
 
-/* ---------- PONTUAÇÃO — efeito "pop" ao marcar ponto ---------- */
+/* =========================================================
+   16 — PONTO MARCADO
+========================================================= */
 
 .bexigas.anim-pop {
-    animation: popPonto .45s cubic-bezier(.34, 1.56, .64, 1);
+
+    animation:
+        popPonto
+        .45s
+        cubic-bezier(
+            .34,
+            1.56,
+            .64,
+            1
+        );
+
 }
+
 
 @keyframes popPonto {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(1.35) rotate(-4deg); }
-    70%  { transform: scale(.95) rotate(2deg); }
-    100% { transform: scale(1) rotate(0); }
+
+    0% {
+        transform:
+            scale(1);
+    }
+
+    35% {
+        transform:
+            scale(1.45)
+            rotate(-5deg);
+    }
+
+    65% {
+        transform:
+            scale(.92)
+            rotate(3deg);
+    }
+
+    100% {
+        transform:
+            scale(1)
+            rotate(0);
+    }
+
 }
 
 
-/* ---------- CRONÔMETRO — pulso nos segundos finais ---------- */
+/* Card recebe um pequeno impacto */
 
-.cronometro.tempo-critico {
-    color: var(--vermelho);
-    animation: pulsarCritico .6s ease-in-out infinite;
+.competidor.ponto-marcado {
+
+    animation:
+        impactoCard
+        .45s
+        ease-out;
+
 }
 
-@keyframes pulsarCritico {
-    0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.08); }
+
+@keyframes impactoCard {
+
+    0% {
+        transform:
+            scale(1);
+    }
+
+    35% {
+        transform:
+            scale(1.025);
+    }
+
+    100% {
+        transform:
+            scale(1);
+    }
+
 }
 
 
-/* ---------- VENCEDOR — comemoração ---------- */
+/* =========================================================
+   17 — VITÓRIA
+========================================================= */
 
 .mensagem-vencedor.comemorar {
-    animation: comemorarVitoria .8s ease-out;
+
+    animation:
+        comemorarVitoria
+        .8s
+        cubic-bezier(
+            .22,
+            1,
+            .36,
+            1
+        );
+
 }
+
 
 @keyframes comemorarVitoria {
-    0%   { opacity: 0; transform: scale(.5); }
-    60%  { opacity: 1; transform: scale(1.15); }
-    100% { opacity: 1; transform: scale(1); }
+
+    0% {
+        opacity: 0;
+        transform:
+            scale(.5);
+    }
+
+    55% {
+        opacity: 1;
+        transform:
+            scale(1.18);
+    }
+
+    75% {
+        transform:
+            scale(.96);
+    }
+
+    100% {
+        opacity: 1;
+        transform:
+            scale(1);
+    }
+
 }
+
+
+/* Halo da vitória */
 
 .mensagem-vencedor.comemorar::after {
+
     content: "";
+
     position: absolute;
-    inset: -10px;
+
+    inset: -15px;
+
     z-index: -1;
-    border-radius: inherit;
-    background: var(--amarelo);
-    animation: glowVitoria 1s ease-out;
+
+    border-radius: 50%;
+
+    background:
+        var(--amarelo);
+
+    opacity: 0;
+
+    animation:
+        haloVitoria
+        1s
+        ease-out;
+
 }
 
-@keyframes glowVitoria {
-    from { opacity: .6; transform: scale(1); }
-    to   { opacity: 0; transform: scale(1.6); }
+
+@keyframes haloVitoria {
+
+    0% {
+        opacity: .65;
+        transform:
+            scale(.7);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            scale(1.5);
+    }
+
 }
 
 
-/* ---------- RANKING FREESTYLE — entrada em cascata ---------- */
+/* =========================================================
+   19 — CARD DO VENCEDOR
+========================================================= */
+
+.competidor.card-vencedor {
+
+    animation:
+        vencedorDestaque
+        1.2s
+        ease-in-out
+        infinite;
+
+    position: relative;
+
+    z-index: 2;
+
+}
+
+
+@keyframes vencedorDestaque {
+
+    0%,
+    100% {
+        transform:
+            scale(1);
+    }
+
+    50% {
+        transform:
+            scale(1.025);
+    }
+
+}
+
+
+/* Adversário perde destaque */
+
+.competidor.card-derrotado {
+
+    opacity: .55;
+
+    transform:
+        scale(.97);
+
+    filter:
+        saturate(.7);
+
+    transition:
+        opacity .5s ease,
+        transform .5s ease,
+        filter .5s ease;
+
+}
+
+
+/* =========================================================
+   18 — NOVA PARTIDA
+========================================================= */
+
+.layout-torneio.nova-partida {
+
+    animation:
+        novaPartida
+        .7s
+        cubic-bezier(
+            .22,
+            1,
+            .36,
+            1
+        );
+
+}
+
+
+@keyframes novaPartida {
+
+    0% {
+        opacity: .35;
+
+        transform:
+            translateY(25px)
+            scale(.97);
+    }
+
+    55% {
+        opacity: 1;
+
+        transform:
+            translateY(-4px)
+            scale(1.01);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   CRONÔMETRO — TEMPO CRÍTICO
+========================================================= */
+
+.cronometro.tempo-critico {
+
+    color:
+        var(--vermelho);
+
+    animation:
+        pulsarCritico
+        .6s
+        ease-in-out
+        infinite;
+
+}
+
+
+@keyframes pulsarCritico {
+
+    0%,
+    100% {
+        transform:
+            scale(1);
+    }
+
+    50% {
+        transform:
+            scale(1.08);
+    }
+
+}
+
+
+/* =========================================================
+   20 — RANKING FREESTYLE
+========================================================= */
 
 .historico li {
-    animation: entradaItem .4s ease both;
+
+    animation:
+        entradaRanking
+        .45s
+        ease
+        both;
+
+    animation-delay:
+        calc(
+            var(--ordem-ranking, 0)
+            * .07s
+        );
+
 }
 
-.historico li:nth-child(1) { animation-delay: .05s; }
-.historico li:nth-child(2) { animation-delay: .10s; }
-.historico li:nth-child(3) { animation-delay: .15s; }
-.historico li:nth-child(4) { animation-delay: .20s; }
-.historico li:nth-child(5) { animation-delay: .25s; }
-.historico li:nth-child(n+6) { animation-delay: .30s; }
 
-@keyframes entradaItem {
-    from { opacity: 0; transform: translateX(-16px); }
-    to   { opacity: 1; transform: translateX(0); }
+@keyframes entradaRanking {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateX(-20px)
+            scale(.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateX(0)
+            scale(1);
+    }
+
 }
 
 
-/* ---------- ACESSIBILIDADE ---------- */
+/* Ranking atualizado */
 
-@media (prefers-reduced-motion: reduce) {
+#lista-freestyle.ranking-atualizado {
+
+    animation:
+        atualizarRanking
+        .35s
+        ease-out;
+
+}
+
+
+@keyframes atualizarRanking {
+
+    0% {
+        opacity: .75;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================================================
+   PRIMEIRO LUGAR
+========================================================= */
+
+.historico li:first-child {
+
+    position: relative;
+
+}
+
+
+.historico li:first-child::before {
+
+    content: "🏆";
+
+    display: inline-block;
+
+    margin-right: .5rem;
+
+    animation:
+        trofeuRanking
+        1s
+        ease-in-out
+        infinite;
+
+}
+
+
+@keyframes trofeuRanking {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(0);
+    }
+
+    50% {
+        transform:
+            translateY(-2px)
+            rotate(-4deg);
+    }
+
+}
+
+
+/* =========================================================
+   ACESSIBILIDADE
+========================================================= */
+
+@media (
+    prefers-reduced-motion: reduce
+) {
+
     #modo-torneio:not(.oculto),
     #modo-freestyle:not(.oculto),
     .personagem-esquerda,
     .personagem-direita,
     .cronometro.tempo-critico,
     .bexigas.anim-pop,
+    .competidor.ponto-marcado,
     .mensagem-vencedor.comemorar,
     .mensagem-vencedor.comemorar::after,
-    .historico li {
+    .competidor.card-vencedor,
+    .layout-torneio.nova-partida,
+    .historico li,
+    #lista-freestyle.ranking-atualizado,
+    .historico li:first-child::before {
+
         animation: none !important;
+
+    }
+
+}
+
+/* =========================================================
+   ANIMAÇÃO DE ESPERA — DIGITAÇÃO ISOLADA
+   O span interno é o único elemento alterado pelo JS a
+   cada 80ms — o #titulo-modo (e seus tiques ::before/::after)
+   nunca é recalculado durante a digitação.
+========================================================= */
+
+#titulo-modo.titulo-espera {
+    display: inline-flex;
+}
+
+.texto-espera-interno {
+    display: inline-block;
+}
+
+/* Cursor piscando no fim do texto — só opacidade,
+   sem custo de composição, sem blur */
+.texto-espera-interno::after {
+    content: "";
+    display: inline-block;
+    width: 3px;
+    height: .9em;
+    margin-left: 4px;
+    background: currentColor;
+    vertical-align: -0.1em;
+    animation: piscarCursor 1s steps(1) infinite;
+}
+
+@keyframes piscarCursor {
+    0%, 50%  { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+}
+    
+.texto-espera-interno .cor-laranja {
+    color: var(--laranja);
+} 
+
+
+@media (prefers-reduced-motion: reduce) {
+    .texto-espera-interno::after {
+        animation: none !important;
+        opacity: 1;
     }
 }

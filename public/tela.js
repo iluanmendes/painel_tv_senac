@@ -200,124 +200,59 @@ socket.on(
 
 function atualizarModo(estado) {
 
-    const torneio =
-        document.getElementById(
-            'modo-torneio'
-        );
-
-
-    const freestyle =
-        document.getElementById(
-            'modo-freestyle'
-        );
-
+    const torneio = document.getElementById('modo-torneio');
+    const freestyle = document.getElementById('modo-freestyle');
 
     /*
-     * Nenhum modo selecionado.
+     * Nenhum modo selecionado: a animação de espera
+     * assume o #titulo-modo.
      */
 
     if (!estado.modo) {
 
-        if (torneio) {
+        if (torneio) torneio.classList.add('oculto');
+        if (freestyle) freestyle.classList.add('oculto');
 
-            torneio.classList.add(
-                'oculto'
-            );
-
+        if (!pararAnimacaoEspera && typeof iniciarAnimacaoEspera === 'function') {
+            pararAnimacaoEspera = iniciarAnimacaoEspera();
         }
-
-
-        if (freestyle) {
-
-            freestyle.classList.add(
-                'oculto'
-            );
-
-        }
-
-
-        setTexto(
-            'titulo-modo',
-            'Aguardando Início...'
-        );
-
 
         return;
-
     }
 
-
     /*
-     * TORNEIO
+     * Um modo foi selecionado: para a animação e libera
+     * o #titulo-modo para o texto estático do modo.
      */
 
-    if (
-        estado.modo ===
-        'torneio'
-    ) {
+    if (pararAnimacaoEspera) {
+        pararAnimacaoEspera();
+        pararAnimacaoEspera = null;
+    }
 
-        if (torneio) {
+    if (estado.modo === 'torneio') {
 
-            torneio.classList.remove(
-                'oculto'
-            );
-
-        }
-
-
-        if (freestyle) {
-
-            freestyle.classList.add(
-                'oculto'
-            );
-
-        }
-
+        if (torneio) torneio.classList.remove('oculto');
+        if (freestyle) freestyle.classList.add('oculto');
 
         setTexto(
             'titulo-modo',
             'MODO <span class="cor-destaque cor-vermelho">TORNEIO</span>',
             true
         );
-
     }
 
+    if (estado.modo === 'freestyle') {
 
-    /*
-     * FREESTYLE
-     */
-
-    if (
-        estado.modo ===
-        'freestyle'
-    ) {
-
-        if (torneio) {
-
-            torneio.classList.add(
-                'oculto'
-            );
-
-        }
-
-
-        if (freestyle) {
-
-            freestyle.classList.remove(
-                'oculto'
-            );
-
-        }
-
+        if (torneio) torneio.classList.add('oculto');
+        if (freestyle) freestyle.classList.remove('oculto');
 
         setTexto(
             'titulo-modo',
             'MODO <span class="cor-destaque cor-azul">FREESTYLE</span>',
             true
         );
-
     }
-
 }
 
 
@@ -449,7 +384,7 @@ function renderizarFreestyle(
         return;
     }
 
-    
+
 
     const nomeRobo1 =
         document.getElementById(
@@ -468,52 +403,52 @@ function renderizarFreestyle(
  * com o número grande do modo Torneio)
  */
 
-const seloRobo1 =
-    document.getElementById(
-        'selo-free-robo1'
-    );
+    const seloRobo1 =
+        document.getElementById(
+            'selo-free-robo1'
+        );
 
 
-const seloRobo2 =
-    document.getElementById(
-        'selo-free-robo2'
-    );
+    const seloRobo2 =
+        document.getElementById(
+            'selo-free-robo2'
+        );
 
 
-if (seloRobo1 && seloRobo2) {
+    if (seloRobo1 && seloRobo2) {
 
-    const venceuRobo1 =
-        dados.vencedor &&
-        dados.vencedor === dados.robo1;
-
-
-    const venceuRobo2 =
-        dados.vencedor &&
-        dados.vencedor === dados.robo2;
+        const venceuRobo1 =
+            dados.vencedor &&
+            dados.vencedor === dados.robo1;
 
 
-    seloRobo1.innerText =
-        venceuRobo1
-            ? '🏆 Campeão'
-            : '';
-
-    seloRobo1.classList.toggle(
-        'vencedor',
-        venceuRobo1
-    );
+        const venceuRobo2 =
+            dados.vencedor &&
+            dados.vencedor === dados.robo2;
 
 
-    seloRobo2.innerText =
-        venceuRobo2
-            ? '🏆 Campeão'
-            : '';
+        seloRobo1.innerText =
+            venceuRobo1
+                ? '🏆 Campeão'
+                : '';
 
-    seloRobo2.classList.toggle(
-        'vencedor',
-        venceuRobo2
-    );
+        seloRobo1.classList.toggle(
+            'vencedor',
+            venceuRobo1
+        );
 
-}
+
+        seloRobo2.innerText =
+            venceuRobo2
+                ? '🏆 Campeão'
+                : '';
+
+        seloRobo2.classList.toggle(
+            'vencedor',
+            venceuRobo2
+        );
+
+    }
 
     if (nomeRobo1) {
 
