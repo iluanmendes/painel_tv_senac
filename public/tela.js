@@ -163,6 +163,9 @@ socket.on(
             return;
         }
 
+        document.body.dataset.status = estado.status || '';
+        document.body.dataset.modo = estado.modo || '';
+
 
         atualizarModo(estado);
 
@@ -189,6 +192,7 @@ socket.on(
             );
 
         }
+
 
     }
 );
@@ -305,7 +309,7 @@ function renderizarTorneio(
     );
 
 
-   
+
 
     /*
      * Vitória por pontuação

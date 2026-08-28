@@ -5,6 +5,13 @@
   },
   "rankingFreestyle": [
     {
+      "nome": "Robô Azul",
+      "robo1": "Robô Azul",
+      "robo2": "Robô Vermelho",
+      "tempoSegundos": 7,
+      "horario": "06:53"
+    },
+    {
       "nome": "cd",
       "robo1": "ab",
       "robo2": "cd",
