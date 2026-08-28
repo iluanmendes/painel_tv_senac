@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle - Robô Sumô</title>
     <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
     <script src="/socket.io/socket.io.js"></script>
 </head>
 
@@ -14,15 +19,16 @@
     <header class="cabecalho-controle">
         <img src="logo-casa-aberta.png" alt="Casa Aberta Senac">
         <h1>Painel de Controle</h1>
-        <button id="btn-abrir-config" class="botao-engrenagem" title="Configurações" aria-label="Abrir configurações">
-            ⚙️
-        </button>
+
+        <div class="acoes-cabecalho" id="acoes-cabecalho">
+            <button id="btn-abrir-fila" class="botao-engrenagem" title="Fila de Participantes" aria-label="Abrir fila de participantes">📋</button>
+            <button id="btn-abrir-config" class="botao-engrenagem" title="Configurações" aria-label="Abrir configurações">⚙️</button>
+        </div>
     </header>
 
     <div id="status-conexao" class="status-conexao status-offline">
         <span class="ponto"></span> Conectando...
     </div>
-
 
     <!-- TELA DE BLOQUEIO -->
     <div id="tela-bloqueio" class="tela-login">
@@ -38,21 +44,134 @@
     <!-- PAINEL DE CONTROLE -->
     <div id="conteudo-controle" class="oculto">
 
-        <div class="card-controle">
-            <label>Menu:</label>
-            <div class="botoes-modo" style="display: flex; gap: 5px;">
-                <button id="btn-modo-torneio" class="btn-primario">Torneio</button>
-                <button id="btn-modo-freestyle" class="btn-primario">Freestyle</button>
+        <!-- HUB: some inteiro durante o modo concentração -->
+        <div class="card-controle" id="card-menu">
+            <label>Escolha o modo:</label>
+            <div class="botoes-modo">
+                <button id="btn-modo-torneio" class="btn-modo-grande">
+                    <span class="icone-modo">🥋</span>
+                    <span>Torneio</span>
+                </button>
+                <button id="btn-modo-freestyle" class="btn-modo-grande">
+                    <span class="icone-modo">🎮</span>
+                    <span>Freestyle</span>
+                </button>
             </div>
 
             <button id="btn-resetar-competicao" class="btn-reset">
                 🔄 Zerar Partida / Voltar ao Início
             </button>
-
         </div>
 
-        <!-- MODO DE CONFIGURAÇÃO -->
-        <div id="controles-config" class="card-controle oculto">
+
+        <!-- =====================================================
+             TORNEIO
+        ===================================================== -->
+
+        <div id="controles-torneio" class="card-controle oculto">
+
+            <h3>Modo Torneio</h3>
+
+            <div id="acoes-preparo-torneio" class="acoes">
+                <input type="text" id="input-robo1" placeholder="Nome do Robô Azul" maxlength="24">
+                <input type="text" id="input-robo2" placeholder="Nome do Robô Vermelho" maxlength="24">
+                <button id="btn-preparar-torneio" class="btn-sucesso">Preparar Partida</button>
+            </div>
+
+            <div id="acoes-jogo-torneio" class="oculto">
+
+                <div class="resumo-partida">
+                    <div class="nomes-resumo">
+                        <span id="nome-resumo-azul" class="nome-resumo nome-azul"></span>
+                        <span class="versus">×</span>
+                        <span id="nome-resumo-vermelho" class="nome-resumo nome-vermelho"></span>
+                    </div>
+                    <div class="placar-controle">
+                        <span id="placar-controle-r1">0</span>
+                        <span class="cronometro-controle" id="cronometro-controle-torneio">03:00</span>
+                        <span id="placar-controle-r2">0</span>
+                    </div>
+                </div>
+
+                <button id="btn-iniciar-tempo-torneio" class="btn-sucesso btn-iniciar-partida">▶️ Iniciar Partida</button>
+                <button id="btn-pausar-tempo-torneio" class="btn-alerta oculto">⏸️ Pausar Partida</button>
+
+                <div class="acoes-pontuacao">
+
+                    <div class="grupo-pontuacao">
+                        <button id="btn-ponto-robo1" class="btn-azul">+ Ponto Azul</button>
+                        <button id="btn-desfazer-robo1" class="btn-corrigir" title="Retirar último ponto do azul" aria-label="Retirar último ponto do azul">↩ Corrigir</button>
+                    </div>
+
+                    <div class="grupo-pontuacao">
+                        <button id="btn-ponto-robo2" class="btn-vermelho">+ Ponto Vermelho</button>
+                        <button id="btn-desfazer-robo2" class="btn-corrigir" title="Retirar último ponto do vermelho" aria-label="Retirar último ponto do vermelho">↩ Corrigir</button>
+                    </div>
+
+                </div>
+
+                <button id="btn-reiniciar-torneio" class="btn-primario btn-cancelar">🔄 Reiniciar Partida</button>
+            </div>
+        </div>
+
+
+        <!-- =====================================================
+             FREESTYLE
+        ===================================================== -->
+
+        <div id="controles-freestyle" class="card-controle oculto">
+
+            <h3>Modo Freestyle</h3>
+
+            <div class="exibicao-tv" id="exibicao-tv">
+                <label>Exibir na TV:</label>
+                <div class="botoes-exibicao">
+                    <button id="btn-exibir-ambos" class="btn-exibicao" data-exibicao="ambos">Placar + Ranking</button>
+                    <button id="btn-exibir-placar" class="btn-exibicao" data-exibicao="placar">Só Placar</button>
+                    <button id="btn-exibir-ranking" class="btn-exibicao" data-exibicao="ranking">Só Ranking</button>
+                </div>
+            </div>
+
+            <div id="acoes-preparo-freestyle" class="acoes">
+                <input type="text" id="input-free-robo1" placeholder="Nome do Robô Azul" maxlength="24">
+                <input type="text" id="input-free-robo2" placeholder="Nome do Robô Vermelho" maxlength="24">
+                <button id="btn-preparar-freestyle" class="btn-sucesso">Preparar Partida</button>
+            </div>
+
+            <div id="acoes-jogo-freestyle" class="oculto">
+
+                <div class="resumo-partida">
+                    <div class="nomes-resumo">
+                        <span id="nome-resumo-free-azul" class="nome-resumo nome-azul"></span>
+                        <span class="versus">×</span>
+                        <span id="nome-resumo-free-vermelho" class="nome-resumo nome-vermelho"></span>
+                    </div>
+                    <div class="placar-controle placar-controle-simples">
+                        <span class="cronometro-controle" id="cronometro-controle-freestyle">00:00</span>
+                    </div>
+                </div>
+
+                <button id="btn-iniciar-freestyle" class="btn-sucesso btn-iniciar-partida">▶️ Iniciar Partida</button>
+                <button id="btn-reiniciar-preparo-freestyle" class="btn-primario btn-cancelar">🔄 Reiniciar</button>
+
+                <div id="acoes-vencedor-freestyle" class="acoes-pontuacao oculto">
+                    <button id="btn-venceu-robo1" class="btn-azul">🏆 Vitória Azul</button>
+                    <button id="btn-venceu-robo2" class="btn-vermelho">🏆 Vitória Vermelha</button>
+                    <button id="btn-empate-freestyle" class="btn-alerta">🤝 Sem Vencedor</button>
+                    <button id="btn-reiniciar-freestyle" class="btn-primario btn-cancelar">🔄 Reiniciar Partida</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MODAIS (flutuam por cima, não substituem a tela)
+    ===================================================== -->
+
+    <div id="modal-config" class="modal-overlay oculto">
+        <div class="modal-conteudo">
             <div class="cabecalho-config">
                 <h3>Configurações do Campeonato</h3>
                 <button id="btn-fechar-config" class="botao-fechar" aria-label="Fechar configurações">✕</button>
@@ -60,168 +179,30 @@
 
             <label>Tempo do Torneio (em segundos):</label>
             <input type="number" id="input-tempo-torneio" placeholder="Ex: 180" min="10">
+
+            <label>Tempo máximo por tentativa — Freestyle (em segundos):</label>
+            <input type="number" id="input-tempo-freestyle" placeholder="Ex: 60" min="5">
+
             <button id="btn-salvar-config" class="btn-sucesso">Salvar Configurações</button>
         </div>
-
-        <!-- =====================================================
-     CONTROLES TORNEIO
-===================================================== -->
-
-        <div id="controles-torneio" class="card-controle oculto">
-
-            <h3>Modo Torneio</h3>
-
-            <input type="text" id="input-robo1" placeholder="Nome do Robô Azul" maxlength="24">
-
-            <input type="text" id="input-robo2" placeholder="Nome do Robô Vermelho" maxlength="24">
-
-
-            <!-- ===============================
-         PREPARAÇÃO
-    ================================ -->
-
-            <div id="acoes-preparo-torneio" class="acoes">
-
-                <button id="btn-preparar-torneio" class="btn-sucesso">
-                    Preparar Partida
-                </button>
-
-            </div>
-
-
-            <!-- ===============================
-         PARTIDA
-    ================================ -->
-
-            <div id="acoes-jogo-torneio" class="oculto">
-
-                <!-- CONTROLE PRINCIPAL -->
-
-                <button id="btn-iniciar-tempo-torneio" class="btn-sucesso btn-iniciar-partida">
-                    ▶️ Iniciar Partida
-                </button>
-
-
-                <button id="btn-pausar-tempo-torneio" class="btn-alerta oculto">
-                    ⏸️ Pausar Partida
-                </button>
-
-
-                <!-- ===========================
-             PONTUAÇÃO
-        ============================ -->
-
-                <div class="acoes-pontuacao">
-
-                    <!-- AZUL -->
-
-                    <div class="grupo-pontuacao">
-
-                        <button id="btn-ponto-robo1" class="btn-azul">
-                            + Ponto Azul
-                        </button>
-
-                        <button id="btn-desfazer-robo1" class="btn-corrigir" title="Retirar último ponto do azul"
-                            aria-label="Retirar último ponto do azul">
-                            ↩ Corrigir
-                        </button>
-
-                    </div>
-
-
-                    <!-- VERMELHO -->
-
-                    <div class="grupo-pontuacao">
-
-                        <button id="btn-ponto-robo2" class="btn-vermelho">
-                            + Ponto Vermelho
-                        </button>
-
-                        <button id="btn-desfazer-robo2" class="btn-corrigir" title="Retirar último ponto do vermelho"
-                            aria-label="Retirar último ponto do vermelho">
-                            ↩ Corrigir
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- ===========================
-             CANCELAR
-        ============================ -->
-
-                <button id="btn-cancelar-torneio" class="btn-primario btn-cancelar">
-                    Cancelar Partida
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =====================================================
-     CONTROLES FREESTYLE
-===================================================== -->
-
-        <div id="controles-freestyle" class="card-controle oculto">
-
-            <h3>Modo Freestyle</h3>
-
-            <p class="descricao-controle">
-                Cada robô possui uma tentativa.
-            </p>
-
-
-            <!-- ===============================
-         PARTICIPANTES
-    ================================ -->
-
-            <input type="text" id="input-free-robo1" placeholder="Nome do Robô Azul" maxlength="24">
-
-            <input type="text" id="input-free-robo2" placeholder="Nome do Robô Vermelho" maxlength="24">
-
-
-            <!-- ===============================
-         PREPARAÇÃO
-    ================================ -->
-
-            <div id="acoes-preparo-freestyle" class="acoes">
-
-                <button id="btn-preparar-freestyle" class="btn-sucesso">
-                    Preparar Partida
-                </button>
-
-            </div>
-
-
-            <!-- ===============================
-         PARTIDA
-    ================================ -->
-
-            <div id="acoes-jogo-freestyle" class="oculto">
-
-                <button id="btn-iniciar-freestyle" class="btn-sucesso btn-iniciar-partida">
-                    ▶️ Iniciar Partida
-                </button>
-
-                <button id="btn-cancelar-preparo-freestyle" class="btn-primario btn-cancelar">
-                    Cancelar
-                </button>
-
-                <!-- VENCEDOR -->
-                <div id="acoes-vencedor-freestyle" class="acoes-pontuacao oculto">
-                    <button id="btn-venceu-robo1" class="btn-azul">🏆 Vitória Azul</button>
-                    <button id="btn-venceu-robo2" class="btn-vermelho">🏆 Vitória Vermelha</button>
-                    <button id="btn-empate-freestyle" class="btn-alerta">🤝 Sem Vencedor</button>
-                    <button id="btn-cancelar-freestyle" class="btn-primario btn-cancelar">Cancelar Partida</button>
-                </div>
-            </div>
-
-        </div>
-
-
     </div>
+
+    <div id="modal-fila" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="cabecalho-config">
+                <h3>Fila de Participantes</h3>
+                <button id="btn-fechar-fila" class="botao-fechar" aria-label="Fechar fila">✕</button>
+            </div>
+
+            <div class="adicionar-fila">
+                <input type="text" id="input-novo-nome-fila" placeholder="Nome do participante" maxlength="24">
+                <button id="btn-adicionar-fila" class="btn-sucesso">Adicionar</button>
+            </div>
+
+            <ul id="lista-fila" class="lista-fila"></ul>
+        </div>
+    </div>
+
     <script src="controle.js"></script>
 </body>
 

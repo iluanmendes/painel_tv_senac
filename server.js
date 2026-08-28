@@ -18,10 +18,12 @@ const ARQUIVO_JSON = './ranking.json';
 
 let dadosApp = {
     configuracoes: {
-        tempoTorneio: 180
+        tempoTorneio: 180,
+        tempoFreestyle: 60
     },
 
-    rankingFreestyle: []
+    rankingFreestyle: [],
+    filaEspera: []
 };
 
 
@@ -34,6 +36,8 @@ let estadoCompeticao = {
     modo: null,
 
     status: 'aguardando',
+    exibicaoFreestyle: 'ambos',   // 'ambos' | 'placar' | 'ranking'
+
 
     torneio: {
         robo1: 'Robô 1',
@@ -204,17 +208,29 @@ function iniciarTimerFreestyle() {
 
     pararTimer();
 
-    estadoCompeticao.status =
-        'em_andamento';
+    estadoCompeticao.status = 'em_andamento';
 
     transmitirEstado();
 
 
     timerServidor = setInterval(() => {
 
-        estadoCompeticao
-            .freestyle
-            .tempoDecorrido++;
+        estadoCompeticao.freestyle.tempoDecorrido++;
+
+        const limite = dadosApp.configuracoes.tempoFreestyle || 60;
+
+        if (estadoCompeticao.freestyle.tempoDecorrido >= limite) {
+
+            pararTimer();
+
+            estadoCompeticao.status = 'finalizado';
+            // vencedor permanece null — o operador ainda decide
+            // manualmente (ou marca "Sem Vencedor")
+
+            transmitirEstado();
+
+            return;
+        }
 
         transmitirEstado();
 
@@ -730,6 +746,23 @@ io.on('connection', (socket) => {
 
                     pararTimer();
 
+                    estadoCompeticao.torneio = {
+                        robo1: 'Robô 1',
+                        robo2: 'Robô 2',
+                        pontos1: 0,
+                        pontos2: 0,
+                        tempoRestante: dadosApp.configuracoes.tempoTorneio || 180,
+                        vencedor: null
+                    };
+
+                    estadoCompeticao.status = 'aguardando';
+
+                    transmitirEstado();
+
+                    break;
+
+                    pararTimer();
+
                     estadoCompeticao.status =
                         'cancelado';
 
@@ -909,6 +942,20 @@ io.on('connection', (socket) => {
 
                     pararTimer();
 
+                    estadoCompeticao.freestyle = {
+                        robo1: 'Robô 1',
+                        robo2: 'Robô 2',
+                        tempoDecorrido: 0,
+                        vencedor: null
+                    };
+
+                    estadoCompeticao.status = 'aguardando';
+
+                    transmitirEstado();
+
+                    break;
+                    pararTimer();
+
                     estadoCompeticao.status =
                         'cancelado';
 
@@ -975,11 +1022,12 @@ io.on('connection', (socket) => {
 
                     pararTimer();
 
+                    const exibicaoAtual = estadoCompeticao.exibicaoFreestyle || 'ambos';
+
                     estadoCompeticao = {
-
                         modo: null,
-
                         status: 'aguardando',
+                        exibicaoFreestyle: exibicaoAtual,
 
                         torneio: {
                             robo1: 'Robô 1',
@@ -996,12 +1044,83 @@ io.on('connection', (socket) => {
                             tempoDecorrido: 0,
                             vencedor: null
                         }
-
                     };
 
                     transmitirEstado();
 
                     break;
+                case 'DEFINIR_EXIBICAO_FREESTYLE':
+
+                    if (!['ambos', 'placar', 'ranking'].includes(acao.exibicao)) {
+                        return;
+                    }
+
+                    estadoCompeticao.exibicaoFreestyle = acao.exibicao;
+
+                    transmitirEstado();
+
+                    break;
+
+                // =========================================
+                // FILA DE PARTICIPANTES
+                // =========================================
+
+                case 'FILA_ADICIONAR': {
+
+                    const nome = (acao.nome || '').toString().trim().slice(0, 30);
+
+                    if (!nome) return;
+                    if (dadosApp.filaEspera.length >= 50) return; // limite de segurança
+
+                    dadosApp.filaEspera.push(nome);
+
+                    salvarDados();
+                    io.emit('carregar_dados', dadosApp);
+
+                    break;
+                }
+
+                case 'FILA_REMOVER': {
+
+                    const indice = Number(acao.indice);
+                    if (!Number.isInteger(indice)) return;
+
+                    dadosApp.filaEspera.splice(indice, 1);
+
+                    salvarDados();
+                    io.emit('carregar_dados', dadosApp);
+
+                    break;
+                }
+
+                case 'FILA_MOVER_TOPO': {
+
+                    const indice = Number(acao.indice);
+                    if (!Number.isInteger(indice) || indice <= 0 || indice >= dadosApp.filaEspera.length) return;
+
+                    const [item] = dadosApp.filaEspera.splice(indice, 1);
+                    dadosApp.filaEspera.unshift(item);
+
+                    salvarDados();
+                    io.emit('carregar_dados', dadosApp);
+
+                    break;
+                }
+
+                case 'FILA_SUBIR': {
+
+                    const indice = Number(acao.indice);
+                    if (!Number.isInteger(indice) || indice <= 0 || indice >= dadosApp.filaEspera.length) return;
+
+                    const anterior = dadosApp.filaEspera[indice - 1];
+                    dadosApp.filaEspera[indice - 1] = dadosApp.filaEspera[indice];
+                    dadosApp.filaEspera[indice] = anterior;
+
+                    salvarDados();
+                    io.emit('carregar_dados', dadosApp);
+
+                    break;
+                }
 
             }
 
@@ -1017,77 +1136,44 @@ io.on('connection', (socket) => {
         'salvar_configuracoes',
         (novaConfig) => {
 
-            if (
-                socket.id !==
-                controleLogadoId
-            ) {
+            if (socket.id !== controleLogadoId) {
                 return;
             }
 
+            const novoTempoTorneio = Number(novaConfig.tempoTorneio);
+            const novoTempoFreestyle = Number(novaConfig.tempoFreestyle);
 
-            const novoTempo =
-                Number(
-                    novaConfig.tempoTorneio
-                );
-
-
-            if (
-                !Number.isFinite(
-                    novoTempo
-                ) ||
-                novoTempo <= 0
-            ) {
-
-                socket.emit(
-                    'erro_comando',
-                    'Tempo inválido.'
-                );
-
+            if (!Number.isFinite(novoTempoTorneio) || novoTempoTorneio <= 0) {
+                socket.emit('erro_comando', 'Tempo do Torneio inválido.');
                 return;
-
             }
 
+            if (!Number.isFinite(novoTempoFreestyle) || novoTempoFreestyle <= 0) {
+                socket.emit('erro_comando', 'Tempo do Freestyle inválido.');
+                return;
+            }
 
             dadosApp.configuracoes = {
-
-                tempoTorneio:
-                    novoTempo
-
+                tempoTorneio: novoTempoTorneio,
+                tempoFreestyle: novoTempoFreestyle
             };
 
-
             /*
-             * Se não existe uma partida
-             * em andamento, o novo tempo
-             * já passa a aparecer no painel.
+             * Se não existe uma partida de Torneio em andamento,
+             * o novo tempo já passa a aparecer no painel.
              */
-
             if (
-                estadoCompeticao.modo ===
-                'torneio' &&
-                estadoCompeticao.status !==
-                'em_andamento'
+                estadoCompeticao.modo === 'torneio' &&
+                estadoCompeticao.status !== 'em_andamento'
             ) {
-
-                estadoCompeticao
-                    .torneio
-                    .tempoRestante =
-                    novoTempo;
-
+                estadoCompeticao.torneio.tempoRestante = novoTempoTorneio;
             }
-
 
             salvarDados();
 
-
-            io.emit(
-                'carregar_dados',
-                dadosApp
-            );
-
+            io.emit('carregar_dados', dadosApp);
 
             transmitirEstado();
-
         }
     );
 

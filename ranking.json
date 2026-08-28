@@ -1,6 +1,16 @@
 {
   "configuracoes": {
-    "tempoTorneio": 120
+    "tempoTorneio": 120,
+    "tempoFreestyle": 10
   },
-  "rankingFreestyle": []
+  "rankingFreestyle": [
+    {
+      "nome": "cd",
+      "robo1": "ab",
+      "robo2": "cd",
+      "tempoSegundos": 28,
+      "horario": "22:50"
+    }
+  ],
+  "filaEspera": []
 }

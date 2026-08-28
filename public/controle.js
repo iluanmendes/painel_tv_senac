@@ -1,6 +1,8 @@
 const socket = io();
 
 let estadoCompeticao = null;
+let filaEspera = [];
+
 
 const telaBloqueio = document.getElementById('tela-bloqueio');
 const inputSenha = document.getElementById('input-senha');
@@ -66,26 +68,18 @@ socket.on('disconnect', () => {
 // CONFIGURAÇÕES
 // =========================================================
 
-socket.on(
-    'carregar_dados',
-    (dados) => {
+socket.on('carregar_dados', (dados) => {
 
-        if (
-            dados &&
-            dados.configuracoes
-        ) {
-
-            document.getElementById(
-                'input-tempo-torneio'
-            ).value =
-                dados
-                    .configuracoes
-                    .tempoTorneio;
-
-        }
-
+    if (dados && dados.configuracoes) {
+        document.getElementById('input-tempo-torneio').value = dados.configuracoes.tempoTorneio;
+        document.getElementById('input-tempo-freestyle').value = dados.configuracoes.tempoFreestyle;
     }
-);
+
+    if (dados && Array.isArray(dados.filaEspera)) {
+        filaEspera = dados.filaEspera;
+        renderizarFila();
+    }
+});
 
 
 // =========================================================
@@ -114,6 +108,20 @@ function sincronizarControle() {
 
     if (!estadoCompeticao) return;
 
+    atualizarAbaAtiva();
+
+    const focoTorneio = estadoCompeticao.modo === 'torneio' &&
+        ['preparado', 'em_andamento', 'pausado', 'finalizado'].includes(estadoCompeticao.status);
+
+    const focoFreestyle = estadoCompeticao.modo === 'freestyle' &&
+        ['preparado', 'em_andamento', 'finalizado'].includes(estadoCompeticao.status);
+
+    const emFoco = focoTorneio || focoFreestyle;
+
+    document.getElementById('card-menu').classList.toggle('oculto', emFoco);
+    document.getElementById('acoes-cabecalho').classList.toggle('oculto', emFoco);
+    document.body.classList.toggle('modo-concentracao', emFoco);
+
     if (!estadoCompeticao.modo) {
 
         document.getElementById('controles-torneio').classList.add('oculto');
@@ -139,8 +147,6 @@ function sincronizarControle() {
     sincronizarFreestyle();
 }
 
-
-
 function atualizarAbaAtiva() {
     document.getElementById('btn-modo-torneio')
         .classList.toggle('ativo', estadoCompeticao?.modo === 'torneio');
@@ -158,9 +164,7 @@ function atualizarAbaAtiva() {
 
 function sincronizarTorneio() {
 
-    if (estadoCompeticao.modo !== 'torneio') {
-        return;
-    }
+    if (estadoCompeticao.modo !== 'torneio') return;
 
     const dados = estadoCompeticao.torneio;
     if (!dados) return;
@@ -169,10 +173,7 @@ function sincronizarTorneio() {
     pontosR2 = Number(dados.pontos2) || 0;
 
     const partidaRodando = estadoCompeticao.status === 'em_andamento';
-
-    // Estados em que a partida já foi preparada/está em curso
-    const emJogo = ['preparado', 'em_andamento', 'pausado', 'finalizado']
-        .includes(estadoCompeticao.status);
+    const emJogo = ['preparado', 'em_andamento', 'pausado', 'finalizado'].includes(estadoCompeticao.status);
 
     if (emJogo) {
         acoesPreparo.classList.add('oculto');
@@ -182,6 +183,9 @@ function sincronizarTorneio() {
         inputR2.disabled = true;
         if (dados.robo1) inputR1.value = dados.robo1;
         if (dados.robo2) inputR2.value = dados.robo2;
+
+        document.getElementById('nome-resumo-azul').innerText = dados.robo1 || 'Robô 1';
+        document.getElementById('nome-resumo-vermelho').innerText = dados.robo2 || 'Robô 2';
     } else {
         acoesJogo.classList.add('oculto');
         acoesPreparo.classList.remove('oculto');
@@ -189,6 +193,10 @@ function sincronizarTorneio() {
         inputR1.disabled = false;
         inputR2.disabled = false;
     }
+
+    document.getElementById('placar-controle-r1').innerText = pontosR1;
+    document.getElementById('placar-controle-r2').innerText = pontosR2;
+    document.getElementById('cronometro-controle-torneio').innerText = formatarTempo(dados.tempoRestante);
 
     const btnPontoR1 = document.getElementById('btn-ponto-robo1');
     const btnPontoR2 = document.getElementById('btn-ponto-robo2');
@@ -207,7 +215,6 @@ function sincronizarTorneio() {
         btnPausarTempo.classList.add('oculto');
 
         const podeIniciar =
-            estadoCompeticao.status !== 'cancelado' &&
             estadoCompeticao.status !== 'finalizado' &&
             dados.tempoRestante > 0;
 
@@ -222,6 +229,12 @@ function sincronizarTorneio() {
     }
 }
 
+function formatarTempo(segundos) {
+    segundos = Number(segundos) || 0;
+    const min = String(Math.floor(segundos / 60)).padStart(2, '0');
+    const seg = String(segundos % 60).padStart(2, '0');
+    return `${min}:${seg}`;
+}
 
 // =========================================================
 // FREESTYLE
@@ -229,15 +242,12 @@ function sincronizarTorneio() {
 
 function sincronizarFreestyle() {
 
-    if (estadoCompeticao.modo !== 'freestyle') {
-        return;
-    }
+    if (estadoCompeticao.modo !== 'freestyle') return;
 
     const dados = estadoCompeticao.freestyle;
     if (!dados) return;
 
-    const preparadoOuAndamento = ['preparado', 'em_andamento', 'finalizado']
-        .includes(estadoCompeticao.status);
+    const preparadoOuAndamento = ['preparado', 'em_andamento', 'finalizado'].includes(estadoCompeticao.status);
 
     if (preparadoOuAndamento) {
         acoesPreparoFree.classList.add('oculto');
@@ -247,6 +257,9 @@ function sincronizarFreestyle() {
         inputFreeRobo2.disabled = true;
         if (dados.robo1) { freeRobo1 = dados.robo1; inputFreeRobo1.value = dados.robo1; }
         if (dados.robo2) { freeRobo2 = dados.robo2; inputFreeRobo2.value = dados.robo2; }
+
+        document.getElementById('nome-resumo-free-azul').innerText = dados.robo1 || 'Robô 1';
+        document.getElementById('nome-resumo-free-vermelho').innerText = dados.robo2 || 'Robô 2';
     } else {
         acoesJogoFree.classList.add('oculto');
         acoesPreparoFree.classList.remove('oculto');
@@ -255,75 +268,152 @@ function sincronizarFreestyle() {
         inputFreeRobo2.disabled = false;
     }
 
-    const emAndamento = estadoCompeticao.status === 'em_andamento';
+    document.getElementById('cronometro-controle-freestyle').innerText = formatarTempo(dados.tempoDecorrido);
 
-    if (emAndamento) {
+    const emAndamento = estadoCompeticao.status === 'em_andamento';
+    const aguardandoDecisao = estadoCompeticao.status === 'finalizado' && !dados.vencedor;
+
+    if (emAndamento || aguardandoDecisao) {
         btnIniciarFree.classList.add('oculto');
         acoesVencedorFree.classList.remove('oculto');
-    } else if (preparadoOuAndamento) {
+    } else if (estadoCompeticao.status === 'preparado') {
         btnIniciarFree.classList.remove('oculto');
         acoesVencedorFree.classList.add('oculto');
+    } else {
+        btnIniciarFree.classList.add('oculto');
+        acoesVencedorFree.classList.add('oculto');
     }
+
+    document.querySelectorAll('.btn-exibicao').forEach(botao => {
+        botao.classList.toggle(
+            'ativo',
+            botao.dataset.exibicao === (estadoCompeticao.exibicaoFreestyle || 'ambos')
+        );
+    });
 }
 
 // =========================================================
 // NAVEGAÇÃO
 // =========================================================
 
-function alternarModo(
-    idModo,
-    comandoSocket
-) {
+function alternarModo(idModo, comandoSocket) {
 
-    document
-        .getElementById(
-            'controles-torneio'
-        )
-        .classList
-        .add('oculto');
+    document.getElementById('controles-torneio').classList.add('oculto');
+    document.getElementById('controles-freestyle').classList.add('oculto');
 
-
-    document
-        .getElementById(
-            'controles-freestyle'
-        )
-        .classList
-        .add('oculto');
-
-
-    document
-        .getElementById(
-            'controles-config'
-        )
-        .classList
-        .add('oculto');
-
-
-    document
-        .getElementById(
-            idModo
-        )
-        .classList
-        .remove('oculto');
-
+    document.getElementById(idModo).classList.remove('oculto');
 
     if (comandoSocket) {
-
-        socket.emit(
-            'comando_controle',
-            {
-                tipo:
-                    'MUDAR_MODO',
-
-                modo:
-                    comandoSocket
-            }
-        );
-
+        socket.emit('comando_controle', {
+            tipo: 'MUDAR_MODO',
+            modo: comandoSocket
+        });
     }
-
 }
 
+
+function renderizarFila() {
+
+    const lista = document.getElementById('lista-fila');
+    if (!lista) return;
+
+    lista.innerHTML = '';
+
+    if (filaEspera.length === 0) {
+        const vazio = document.createElement('li');
+        vazio.className = 'fila-vazia';
+        vazio.innerText = 'Fila vazia — adicione os próximos participantes acima';
+        lista.appendChild(vazio);
+        return;
+    }
+
+    filaEspera.forEach((nome, indice) => {
+
+        const li = document.createElement('li');
+        li.className = 'item-fila';
+
+        const spanNome = document.createElement('span');
+        spanNome.className = 'nome-fila';
+        spanNome.innerText = `${indice + 1}. ${nome}`;
+        li.appendChild(spanNome);
+
+        const acoes = document.createElement('div');
+        acoes.className = 'acoes-fila';
+
+        if (indice > 0) {
+            acoes.appendChild(criarBotaoFila('⤒', 'Mover para o topo', () => {
+                socket.emit('comando_controle', { tipo: 'FILA_MOVER_TOPO', indice });
+            }));
+        }
+
+        acoes.appendChild(criarBotaoFila('🔵', 'Usar como Robô Azul', () => usarNomeFila(nome, 'azul', indice), 'btn-fila-azul'));
+        acoes.appendChild(criarBotaoFila('🔴', 'Usar como Robô Vermelho', () => usarNomeFila(nome, 'vermelho', indice), 'btn-fila-vermelho'));
+        acoes.appendChild(criarBotaoFila('✕', 'Remover da fila', () => {
+            if (!confirm(`Remover "${nome}" da fila?`)) return;
+            socket.emit('comando_controle', { tipo: 'FILA_REMOVER', indice });
+        }, 'btn-fila-remover'));
+
+        li.appendChild(acoes);
+        lista.appendChild(li);
+    });
+}
+
+
+function criarBotaoFila(icone, titulo, aoClicar, classeExtra) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-fila-icone' + (classeExtra ? ' ' + classeExtra : '');
+    btn.title = titulo;
+    btn.setAttribute('aria-label', titulo);
+    btn.innerText = icone;
+    btn.addEventListener('click', aoClicar);
+    return btn;
+}
+
+
+function usarNomeFila(nome, cor, indice) {
+
+    const modo = estadoCompeticao?.modo;
+    let input = null;
+
+    if (modo === 'torneio') input = cor === 'azul' ? inputR1 : inputR2;
+    else if (modo === 'freestyle') input = cor === 'azul' ? inputFreeRobo1 : inputFreeRobo2;
+
+    if (!input || input.disabled) {
+        alert('Vá para a tela de preparação (Torneio ou Freestyle) antes de usar um nome da fila.');
+        return;
+    }
+
+    input.value = nome;
+
+    socket.emit('comando_controle', { tipo: 'FILA_REMOVER', indice });
+
+    document.getElementById('modal-fila').classList.add('oculto');
+}
+
+
+function reabrirPainelDoModo() {
+    if (estadoCompeticao?.modo === 'torneio') {
+        document.getElementById('controles-torneio').classList.remove('oculto');
+    } else if (estadoCompeticao?.modo === 'freestyle') {
+        document.getElementById('controles-freestyle').classList.remove('oculto');
+    }
+}
+
+
+document.getElementById('btn-adicionar-fila').addEventListener('click', () => {
+    const input = document.getElementById('input-novo-nome-fila');
+    const nome = input.value.trim();
+    if (!nome) return;
+
+    socket.emit('comando_controle', { tipo: 'FILA_ADICIONAR', nome });
+    input.value = '';
+    input.focus();
+});
+
+
+document.getElementById('input-novo-nome-fila').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('btn-adicionar-fila').click();
+});
 
 document
     .getElementById(
@@ -354,20 +444,31 @@ document
 
 
 document.getElementById('btn-abrir-config').addEventListener('click', () => {
-    document.getElementById('controles-torneio').classList.add('oculto');
-    document.getElementById('controles-freestyle').classList.add('oculto');
-    document.getElementById('controles-config').classList.remove('oculto');
+    document.getElementById('modal-config').classList.remove('oculto');
 });
 
-document.getElementById('btn-fechar-config').addEventListener('click', () => {
-    document.getElementById('controles-config').classList.add('oculto');
 
-    // Volta para a tela do modo que estava ativo, se houver
-    if (estadoCompeticao?.modo === 'torneio') {
-        document.getElementById('controles-torneio').classList.remove('oculto');
-    } else if (estadoCompeticao?.modo === 'freestyle') {
-        document.getElementById('controles-freestyle').classList.remove('oculto');
-    }
+document.getElementById('btn-fechar-config').addEventListener('click', () => {
+    document.getElementById('modal-config').classList.add('oculto');
+});
+
+
+document.getElementById('btn-abrir-fila').addEventListener('click', () => {
+    document.getElementById('modal-fila').classList.remove('oculto');
+    document.getElementById('input-novo-nome-fila').focus();
+});
+
+
+document.getElementById('btn-fechar-fila').addEventListener('click', () => {
+    document.getElementById('modal-fila').classList.add('oculto');
+});
+
+
+// Fecha ao tocar fora do conteúdo (no fundo escurecido)
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.add('oculto');
+    });
 });
 
 
@@ -390,50 +491,31 @@ document.getElementById('btn-resetar-competicao').addEventListener('click', () =
 // =========================================================
 
 document
-    .getElementById(
-        'btn-salvar-config'
-    )
-    .addEventListener(
-        'click',
-        () => {
+    .getElementById('btn-salvar-config')
+    .addEventListener('click', () => {
 
-            const tempo =
-                parseInt(
-                    document
-                        .getElementById(
-                            'input-tempo-torneio'
-                        )
-                        .value
-                );
+        const tempoTorneio = parseInt(
+            document.getElementById('input-tempo-torneio').value
+        );
 
+        const tempoFreestyle = parseInt(
+            document.getElementById('input-tempo-freestyle').value
+        );
 
-            if (tempo > 0) {
+        if (tempoTorneio > 0 && tempoFreestyle > 0) {
 
-                socket.emit(
-                    'salvar_configuracoes',
-                    {
-                        tempoTorneio:
-                            tempo
-                    }
-                );
+            socket.emit('salvar_configuracoes', {
+                tempoTorneio,
+                tempoFreestyle
+            });
 
+            alert('Configuração salva com sucesso!');
 
-                alert(
-                    'Configuração salva com sucesso!'
-                );
+        } else {
 
-            } else {
-
-                alert(
-                    'Digite um tempo válido maior que 0.'
-                );
-
-            }
-
+            alert('Preencha os dois tempos com valores válidos.');
         }
-    );
-
-
+    });
 // =========================================================
 // TORNEIO
 // =========================================================
@@ -736,64 +818,6 @@ document
 
 
 
-// =========================================================
-// CANCELAR TORNEIO
-// =========================================================
-
-document
-    .getElementById(
-        'btn-cancelar-torneio'
-    )
-    .addEventListener(
-        'click',
-        () => {
-
-            inputR1.disabled =
-                false;
-
-            inputR2.disabled =
-                false;
-
-
-            inputR1.value = '';
-            inputR2.value = '';
-
-
-            acoesJogo
-                .classList
-                .add('oculto');
-
-
-            acoesPreparo
-                .classList
-                .remove('oculto');
-
-
-            btnIniciarTempo
-                .classList
-                .remove('oculto');
-
-
-            btnIniciarTempo.innerText =
-                '▶️ Iniciar Relógio';
-
-
-            btnPausarTempo
-                .classList
-                .add('oculto');
-
-
-            socket.emit(
-                'comando_controle',
-                {
-                    tipo:
-                        'CANCELAR_TORNEIO'
-                }
-            );
-
-        }
-    );
-
 
 // =========================================================
 // FREESTYLE
@@ -852,11 +876,6 @@ const btnVenceuRobo2 =
         'btn-venceu-robo2'
     );
 
-
-const btnCancelarFree =
-    document.getElementById(
-        'btn-cancelar-freestyle'
-    );
 
 
 let freeRobo1 = '';
@@ -1005,83 +1024,30 @@ function registrarVitoriaFreestyle(
 }
 
 
-// =========================================================
-// CANCELAR FREESTYLE
-// =========================================================
-
-// =========================================================
-// CANCELAR FREESTYLE
-// =========================================================
-
-btnCancelarFree
-    .addEventListener(
-        'click',
-        () => {
-
-            socket.emit(
-                'comando_controle',
-                {
-                    tipo:
-                        'CANCELAR_FREESTYLE'
-                }
-            );
-
-
-            inputFreeRobo1.disabled =
-                false;
-
-            inputFreeRobo2.disabled =
-                false;
-
-
-            inputFreeRobo1.value = '';
-            inputFreeRobo2.value = '';
-
-
-            acoesJogoFree
-                .classList
-                .add('oculto');
-
-
-            acoesPreparoFree
-                .classList
-                .remove('oculto');
-
-
-            btnIniciarFree
-                .classList
-                .remove('oculto');
-
-
-            acoesVencedorFree
-                .classList
-                .add('oculto');
-
-        }
-    );
 
 // =========================================================
 // RESET FREESTYLE
 // =========================================================
 
-// TORNEIO — cancelar
-document.getElementById('btn-cancelar-torneio').addEventListener('click', () => {
+// TORNEIO — reiniciar
+document.getElementById('btn-reiniciar-torneio').addEventListener('click', () => {
 
-    if (!confirm('Tem certeza que deseja cancelar esta partida?')) return;
+    if (!confirm('Isso vai reiniciar o ciclo da partida (Nome → Preparar → Iniciar), apagando a pontuação e o tempo atuais. Confirma?')) return;
 
     socket.emit('comando_controle', { tipo: 'CANCELAR_TORNEIO' });
-    // A UI é atualizada via sincronizarControle() quando o servidor responder
 });
 
-// FREESTYLE — cancelar antes de iniciar
-document.getElementById('btn-cancelar-preparo-freestyle').addEventListener('click', () => {
+
+// FREESTYLE — reiniciar antes de iniciar
+document.getElementById('btn-reiniciar-preparo-freestyle').addEventListener('click', () => {
     socket.emit('comando_controle', { tipo: 'CANCELAR_FREESTYLE' });
 });
 
-// FREESTYLE — cancelar durante a partida
-btnCancelarFree.addEventListener('click', () => {
 
-    if (!confirm('Tem certeza que deseja cancelar esta partida?')) return;
+// FREESTYLE — reiniciar durante a partida
+document.getElementById('btn-reiniciar-freestyle').addEventListener('click', () => {
+
+    if (!confirm('Isso vai reiniciar o ciclo da partida (Nome → Preparar → Iniciar), apagando o tempo atual. Confirma?')) return;
 
     socket.emit('comando_controle', { tipo: 'CANCELAR_FREESTYLE' });
 });
@@ -1094,5 +1060,14 @@ document.getElementById('btn-empate-freestyle').addEventListener('click', () => 
     socket.emit('comando_controle', {
         tipo: 'REGISTRAR_FREESTYLE',
         vencedor: 'Empate'
+    });
+});
+
+document.querySelectorAll('.btn-exibicao').forEach(botao => {
+    botao.addEventListener('click', () => {
+        socket.emit('comando_controle', {
+            tipo: 'DEFINIR_EXIBICAO_FREESTYLE',
+            exibicao: botao.dataset.exibicao
+        });
     });
 });

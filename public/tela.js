@@ -305,24 +305,7 @@ function renderizarTorneio(
     );
 
 
-    /*
-     * Partida cancelada
-     */
-
-    if (
-        estado.status ===
-        'cancelado'
-    ) {
-
-        setTexto(
-            'vencedor-torneio',
-            'Partida Cancelada'
-        );
-
-        return;
-
-    }
-
+   
 
     /*
      * Vitória por pontuação
@@ -376,14 +359,19 @@ function renderizarFreestyle(
     estado
 ) {
 
-    const dados =
-        estado.freestyle;
-
+    const dados = estado.freestyle;
 
     if (!dados) {
         return;
     }
 
+    // NOVO: alterna o que aparece na TV
+    const placar = document.getElementById('freestyle-placar');
+    const ranking = document.getElementById('freestyle-ranking');
+    const exibicao = estado.exibicaoFreestyle || 'ambos';
+
+    if (placar) placar.classList.toggle('oculto', exibicao === 'ranking');
+    if (ranking) ranking.classList.toggle('oculto', exibicao === 'placar');
 
 
     const nomeRobo1 =
@@ -500,20 +488,6 @@ function renderizarFreestyle(
         return;
     }
 
-
-    if (
-        estado.status ===
-        'cancelado'
-    ) {
-
-        vencedor.innerText =
-            'Partida Cancelada';
-
-        return;
-
-    }
-
-
     if (dados.vencedor) {
 
         vencedor.innerText =
@@ -521,6 +495,13 @@ function renderizarFreestyle(
 
         return;
 
+    }
+
+
+    // NOVO: tempo esgotado sem vencedor declarado ainda
+    if (estado.status === 'finalizado' && !dados.vencedor) {
+        vencedor.innerText = 'Tempo Esgotado!';
+        return;
     }
 
 
