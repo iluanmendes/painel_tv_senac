@@ -1,0 +1,8 @@
+{
+  "configuracoes": {
+    "tempoTorneio": 180,
+    "tempoFreestyle": 60
+  },
+  "rankingFreestyle": [],
+  "filaEspera": []
+}
